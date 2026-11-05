@@ -10,7 +10,7 @@ object UploadRules {
         "image/jpeg" to (MediaType.IMAGE to 10 * MB),
         "image/png" to (MediaType.IMAGE to 10 * MB),
         "image/webp" to (MediaType.IMAGE to 10 * MB),
-        "image/gif" to (MediaType.GIF to 15 * MB),
+        "image/gif" to (MediaType.GIF to 10 * MB),
         "video/mp4" to (MediaType.VIDEO to 50 * MB),
         "video/webm" to (MediaType.VIDEO to 50 * MB),
     )
