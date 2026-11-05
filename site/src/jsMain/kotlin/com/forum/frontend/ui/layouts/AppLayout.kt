@@ -57,7 +57,7 @@ fun AppLayout(content: @Composable () -> Unit) {
             Main({ classes("app-content") }) {
                 content()
             }
-            RightRail(user = currentUser, onNavigate = navigate)
+            RightRail(user = currentUser, currentPath = path, onNavigate = navigate)
         }
         BottomNav(
             currentPath = path,

@@ -13,6 +13,7 @@ data class UserProfile(
     val pictureUrl: String?,
     val role: Role,
     val stats: ProfileStats,
+    val joinedAt: Double? = null,
 ) {
     val fullName: String get() = "$firstName $lastName"
 }

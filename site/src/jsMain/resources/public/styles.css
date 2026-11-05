@@ -394,6 +394,44 @@ button { cursor: pointer; }
 .attachment-remove:hover { background: var(--danger); transform: scale(1.08); }
 .attachment-remove .material-symbols-rounded { font-size: 16px; }
 
+.profile-hero { padding: 0; overflow: hidden; }
+.profile-cover { position: relative; height: 150px; overflow: hidden; background: linear-gradient(135deg, #5a2328 0%, #2a1416 55%, #160c0d 100%); }
+.profile-cover::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 35%, rgba(62, 25, 28, 0.92)); }
+.cover-orb { position: absolute; border-radius: 50%; filter: blur(36px); opacity: 0.75; animation: drift 14s ease-in-out infinite alternate; }
+.orb-a { width: 240px; height: 240px; left: -40px; top: -90px; background: rgba(242, 184, 75, 0.55); }
+.orb-b { width: 280px; height: 280px; right: -60px; top: -60px; background: rgba(255, 90, 110, 0.35); animation-delay: -6s; }
+.profile-bar { position: relative; display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; padding: 0 20px; margin-top: -52px; }
+.profile-avatar { padding: 5px; border-radius: 32px; background: #1f1112; box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45); }
+.profile-avatar .avatar-lg { width: 104px; height: 104px; font-size: 34px; border-radius: 28px; }
+.profile-action { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.profile-action .material-symbols-rounded { font-size: 19px; }
+.profile-body { display: flex; flex-direction: column; gap: 10px; padding: 14px 20px 6px; }
+.profile-hero .profile-name { font-size: 24px; }
+.profile-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; color: var(--muted); font-size: 14px; }
+.meta-item { display: inline-flex; align-items: center; gap: 6px; }
+.meta-item .material-symbols-rounded { font-size: 18px; }
+.profile-counts { display: flex; flex-wrap: wrap; gap: 6px 20px; font-size: 14px; color: var(--muted); }
+.count b { color: var(--text); font-weight: 600; }
+.profile-tabs { display: flex; margin-top: 10px; border-top: 1px solid var(--border); }
+.profile-tab { position: relative; flex: 1; padding: 15px 10px; border: none; background: none; color: var(--muted); font-size: 15px; font-weight: 500; transition: color 0.2s, background 0.2s; }
+.profile-tab::after { content: ""; position: absolute; left: 50%; bottom: 0; width: 0; height: 3px; border-radius: 3px 3px 0 0; background: var(--gold); transform: translateX(-50%); transition: width 0.3s var(--ease-out); }
+.profile-tab:hover { color: var(--text); background: var(--surface); }
+.profile-tab.active { color: var(--text); font-weight: 600; }
+.profile-tab.active::after { width: 56px; }
+.profile-empty-action { align-self: center; }
+.badge-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+.badge-card { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 18px 14px; text-align: center; }
+.badge-card .badge-icon { width: 56px; height: 56px; margin-bottom: 4px; }
+.badge-date { font-size: 12px; color: var(--gold); }
+.badge-grid > * { animation: rise 0.4s var(--ease-out) backwards; }
+
+@media (max-width: 420px) {
+  .profile-cover { height: 120px; }
+  .profile-avatar .avatar-lg { width: 86px; height: 86px; font-size: 28px; }
+  .profile-bar { margin-top: -44px; padding: 0 16px; }
+  .profile-body { padding: 12px 16px 4px; }
+}
+
 @media (min-width: 1024px) {
   body { background: radial-gradient(1200px 600px at 50% -10%, var(--glow) 0%, transparent 60%), var(--bg); background-attachment: fixed; }
   .app-shell { max-width: 1280px; padding: 0 24px 40px; }
@@ -467,6 +505,11 @@ button { cursor: pointer; }
   .comment-composer { bottom: 20px; }
   .toast { bottom: 32px; }
   .post-card-media { max-height: 720px; }
+  .profile-cover { height: 200px; }
+  .profile-bar { margin-top: -64px; padding: 0 28px; }
+  .profile-avatar .avatar-lg { width: 128px; height: 128px; font-size: 42px; border-radius: 34px; }
+  .profile-body { padding: 16px 28px 8px; }
+  .profile-hero .profile-name { font-size: 28px; }
 }
 
 @media (min-width: 1024px) and (max-width: 1200px) {
@@ -474,6 +517,7 @@ button { cursor: pointer; }
 }
 
 @keyframes spin { to { transform: rotate(360deg); } }
+@keyframes drift { from { transform: translate(0, 0); } to { transform: translate(30px, 18px); } }
 @keyframes lupa-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
 @keyframes panel-in { from { opacity: 0; transform: translateY(-6px) scale(0.98); } to { opacity: 1; transform: none; } }
 @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }

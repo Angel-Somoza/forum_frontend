@@ -15,6 +15,7 @@ fun ProfileDto.toDomain(): UserProfile = UserProfile(
     pictureUrl = profilePictureUrl.toSafeUrl(),
     role = Role.fromApi(roleName),
     stats = ProfileStats(posts = stats.posts, reactions = stats.reactions, badges = stats.badges),
+    joinedAt = createdAt?.let { parseApiDate(it) },
 )
 
 fun BadgeDto.toDomain(): Badge = Badge(

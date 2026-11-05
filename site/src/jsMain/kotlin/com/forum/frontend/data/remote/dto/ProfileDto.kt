@@ -18,6 +18,7 @@ data class ProfileDto(
     @SerialName("profile_picture_url") val profilePictureUrl: String? = null,
     @SerialName("role_name") val roleName: String,
     val stats: ProfileStatsDto = ProfileStatsDto(),
+    @SerialName("created_at") val createdAt: String? = null,
 )
 
 @Serializable

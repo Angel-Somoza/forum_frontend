@@ -50,7 +50,7 @@ val presentationModule = module {
     factory { NewPostViewModel(get(), get(), get(), get()) }
     factory { PostDetailViewModel(get(), get(), get(), get()) }
     factory { SearchViewModel(get()) }
-    factory { ProfileViewModel(get(), get()) }
+    factory { ProfileViewModel(get(), get(), get()) }
     factory { NotificationsViewModel(get()) }
 }
 

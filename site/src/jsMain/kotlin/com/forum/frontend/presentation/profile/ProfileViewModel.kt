@@ -2,7 +2,10 @@ package com.forum.frontend.presentation.profile
 
 import com.forum.frontend.core.resultOf
 import com.forum.frontend.domain.error.toUserMessage
+import com.forum.frontend.domain.model.Post
+import com.forum.frontend.domain.model.ReactionType
 import com.forum.frontend.domain.repository.AuthRepository
+import com.forum.frontend.domain.repository.PostRepository
 import com.forum.frontend.domain.repository.ProfileRepository
 import com.forum.frontend.presentation.core.ViewModel
 import kotlinx.coroutines.Job
@@ -16,8 +19,11 @@ import kotlinx.coroutines.launch
 
 class ProfileViewModel(
     private val profileRepository: ProfileRepository,
+    private val postRepository: PostRepository,
     authRepository: AuthRepository,
 ) : ViewModel() {
+
+    private val pendingLikes = mutableSetOf<Int>()
 
     private val currentUserId = authRepository.currentUser.value?.id
 
@@ -84,6 +90,32 @@ class ProfileViewModel(
                 }
                 .onFailure { error -> _state.update { it.copy(isLoadingMore = false, message = error.toUserMessage()) } }
         }
+    }
+
+    fun toggleLike(postId: Int) {
+        if (postId in pendingLikes) return
+        val original = _state.value.posts.firstOrNull { it.id == postId } ?: return
+        val wasLiked = original.isLiked
+        replacePost(
+            original.copy(
+                myReaction = if (wasLiked) null else ReactionType.LIKE,
+                reactionCount = original.reactionCount + if (wasLiked) -1 else 1,
+            ),
+        )
+        pendingLikes += postId
+        scope.launch {
+            resultOf {
+                if (wasLiked) postRepository.removeReaction(postId) else postRepository.react(postId, ReactionType.LIKE)
+            }.onFailure { error ->
+                replacePost(original)
+                _state.update { it.copy(message = error.toUserMessage()) }
+            }
+            pendingLikes -= postId
+        }
+    }
+
+    private fun replacePost(post: Post) {
+        _state.update { s -> s.copy(posts = s.posts.map { if (it.id == post.id) post else it }) }
     }
 
     fun dismissMessage() {

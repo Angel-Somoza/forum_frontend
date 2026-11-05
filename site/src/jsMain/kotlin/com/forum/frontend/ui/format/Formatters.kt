@@ -1,6 +1,7 @@
 package com.forum.frontend.ui.format
 
 import kotlin.js.Date
+import kotlin.js.dateLocaleOptions
 import kotlin.math.floor
 
 fun timeAgo(millis: Double): String {
@@ -15,6 +16,9 @@ fun timeAgo(millis: Double): String {
 }
 
 fun formatDate(millis: Double): String = Date(millis).toLocaleDateString("es")
+
+fun formatMonthYear(millis: Double): String =
+    Date(millis).toLocaleDateString("es", dateLocaleOptions { month = "long"; year = "numeric" })
 
 fun compactCount(value: Int): String = when {
     value >= 1_000_000 -> "${oneDecimal(value / 1_000_000.0)} M"

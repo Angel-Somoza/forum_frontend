@@ -33,6 +33,8 @@ fun ProfilePage() {
         state = state,
         onTabSelect = viewModel::selectTab,
         onPostOpen = { id -> ctx.router.navigateTo("/post?id=$id") },
+        onLikeClick = viewModel::toggleLike,
+        onComposeClick = { ctx.router.navigateTo("/new") },
         onRetry = viewModel::retry,
         onLoadMore = viewModel::loadMore,
         onDismissMessage = viewModel::dismissMessage,

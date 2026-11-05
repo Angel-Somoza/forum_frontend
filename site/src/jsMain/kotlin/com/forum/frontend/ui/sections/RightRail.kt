@@ -14,10 +14,11 @@ import org.jetbrains.compose.web.dom.Text
 @Composable
 fun RightRail(
     user: CurrentUser,
+    currentPath: String,
     onNavigate: (String) -> Unit,
 ) {
     Aside({ classes("right-rail") }) {
-        Div({ classes("card", "rail-profile") }) {
+        if (currentPath != "/profile") Div({ classes("card", "rail-profile") }) {
             Div({ classes("rail-cover") })
             Div({ classes("rail-avatar") }) {
                 Avatar(user.firstName, user.lastName, user.profilePictureUrl, AvatarSize.LARGE)
