@@ -18,6 +18,7 @@ import com.forum.frontend.domain.repository.SearchRepository
 import com.forum.frontend.presentation.feed.FeedViewModel
 import com.forum.frontend.presentation.login.LoginViewModel
 import com.forum.frontend.presentation.newpost.NewPostViewModel
+import com.forum.frontend.presentation.notifications.NotificationsViewModel
 import com.forum.frontend.presentation.postdetail.PostDetailViewModel
 import com.forum.frontend.presentation.profile.ProfileViewModel
 import com.forum.frontend.presentation.search.SearchViewModel
@@ -45,6 +46,7 @@ val presentationModule = module {
     factory { PostDetailViewModel(get(), get(), get()) }
     factory { SearchViewModel(get()) }
     factory { ProfileViewModel(get(), get()) }
+    factory { NotificationsViewModel(get()) }
 }
 
 fun initKoin() {
