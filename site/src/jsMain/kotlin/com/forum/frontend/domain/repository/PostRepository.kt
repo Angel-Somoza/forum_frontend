@@ -8,6 +8,7 @@ interface PostRepository {
     suspend fun getFeed(page: Int, spaceId: Int?): Paged<Post>
     suspend fun getPost(id: Int): Post
     suspend fun createPost(spaceId: Int, content: String): Post
+    suspend fun deletePost(id: Int)
     suspend fun react(postId: Int, type: ReactionType)
     suspend fun removeReaction(postId: Int)
 }

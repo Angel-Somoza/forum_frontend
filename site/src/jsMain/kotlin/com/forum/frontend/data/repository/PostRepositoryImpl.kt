@@ -36,6 +36,10 @@ class PostRepositoryImpl(
             CreatePostRequestDto(spaceId, content),
         ).data.toDomain()
 
+    override suspend fun deletePost(id: Int) {
+        api.sendEmpty(HttpMethod.Delete, "/posts/$id")
+    }
+
     override suspend fun react(postId: Int, type: ReactionType) {
         api.sendBody(HttpMethod.Put, "/posts/$postId/reaction", ReactionRequestDto(type.name))
     }

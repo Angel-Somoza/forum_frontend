@@ -19,17 +19,26 @@ fun PostCard(
     post: Post,
     onLikeClick: () -> Unit,
     onCommentsClick: () -> Unit,
+    expanded: Boolean = false,
+    onDeleteClick: (() -> Unit)? = null,
 ) {
     val cover = post.coverMedia
     if (cover != null) {
-        MediaPostCard(post, cover, onLikeClick, onCommentsClick)
+        MediaPostCard(post, cover, expanded, onLikeClick, onCommentsClick, onDeleteClick)
     } else {
-        TextPostCard(post, onLikeClick, onCommentsClick)
+        TextPostCard(post, onLikeClick, onCommentsClick, onDeleteClick)
     }
 }
 
 @Composable
-private fun MediaPostCard(post: Post, cover: Media, onLikeClick: () -> Unit, onCommentsClick: () -> Unit) {
+private fun MediaPostCard(
+    post: Post,
+    cover: Media,
+    expanded: Boolean,
+    onLikeClick: () -> Unit,
+    onCommentsClick: () -> Unit,
+    onDeleteClick: (() -> Unit)?,
+) {
     Article({ classes("post-card", "post-card-media") }) {
         Img(src = cover.url, alt = "", attrs = {
             classes("post-cover")
@@ -43,17 +52,25 @@ private fun MediaPostCard(post: Post, cover: Media, onLikeClick: () -> Unit, onC
                     Span({ classes("author-meta") }) { Text(timeAgo(post.createdAt)) }
                 }
             }
-            Span({ classes("space-tag") }) { Text(post.spaceName) }
+            Div({ classes("overlay-actions") }) {
+                Span({ classes("space-tag") }) { Text(post.spaceName) }
+                onDeleteClick?.let { DeleteButton(it) }
+            }
         }
         Div({ classes("post-overlay-bottom") }) {
-            if (post.content.isNotBlank()) PostText(post.content, clamp = true)
+            if (post.content.isNotBlank()) PostText(post.content, clamp = !expanded)
             PostStats(post, onLikeClick, onCommentsClick)
         }
     }
 }
 
 @Composable
-private fun TextPostCard(post: Post, onLikeClick: () -> Unit, onCommentsClick: () -> Unit) {
+private fun TextPostCard(
+    post: Post,
+    onLikeClick: () -> Unit,
+    onCommentsClick: () -> Unit,
+    onDeleteClick: (() -> Unit)?,
+) {
     Article({ classes("card", "post-card") }) {
         Div({ classes("post-header") }) {
             Avatar(post.author.firstName, post.author.lastName, post.author.pictureUrl)
@@ -62,6 +79,7 @@ private fun TextPostCard(post: Post, onLikeClick: () -> Unit, onCommentsClick: (
                 Span({ classes("author-meta") }) { Text("${post.author.role.label} · ${timeAgo(post.createdAt)}") }
             }
             Span({ classes("space-tag") }) { Text(post.spaceName) }
+            onDeleteClick?.let { DeleteButton(it) }
         }
         if (post.content.isNotBlank()) PostText(post.content)
         post.sharedPost?.let { SharedPostBox(it) }
@@ -75,6 +93,15 @@ private fun TextPostCard(post: Post, onLikeClick: () -> Unit, onCommentsClick: (
         }
         PostStats(post, onLikeClick, onCommentsClick)
     }
+}
+
+@Composable
+private fun DeleteButton(onClick: () -> Unit) {
+    Button({
+        classes("round-button", "small")
+        title("Eliminar publicación")
+        onClick { onClick() }
+    }) { Icon("delete") }
 }
 
 @Composable
