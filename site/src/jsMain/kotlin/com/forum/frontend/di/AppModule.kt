@@ -6,17 +6,20 @@ import com.forum.frontend.data.repository.AuthRepositoryImpl
 import com.forum.frontend.data.repository.CommentRepositoryImpl
 import com.forum.frontend.data.repository.NotificationRepositoryImpl
 import com.forum.frontend.data.repository.PostRepositoryImpl
+import com.forum.frontend.data.repository.ProfileRepositoryImpl
 import com.forum.frontend.data.repository.SearchRepositoryImpl
 import com.forum.frontend.data.session.SessionStore
 import com.forum.frontend.domain.repository.AuthRepository
 import com.forum.frontend.domain.repository.CommentRepository
 import com.forum.frontend.domain.repository.NotificationRepository
 import com.forum.frontend.domain.repository.PostRepository
+import com.forum.frontend.domain.repository.ProfileRepository
 import com.forum.frontend.domain.repository.SearchRepository
 import com.forum.frontend.presentation.feed.FeedViewModel
 import com.forum.frontend.presentation.login.LoginViewModel
 import com.forum.frontend.presentation.newpost.NewPostViewModel
 import com.forum.frontend.presentation.postdetail.PostDetailViewModel
+import com.forum.frontend.presentation.profile.ProfileViewModel
 import com.forum.frontend.presentation.search.SearchViewModel
 import com.forum.frontend.presentation.shell.AppShellViewModel
 import org.koin.core.context.startKoin
@@ -31,6 +34,7 @@ val dataModule = module {
     single<PostRepository> { PostRepositoryImpl(get()) }
     single<CommentRepository> { CommentRepositoryImpl(get()) }
     single<SearchRepository> { SearchRepositoryImpl(get()) }
+    single<ProfileRepository> { ProfileRepositoryImpl(get()) }
 }
 
 val presentationModule = module {
@@ -40,6 +44,7 @@ val presentationModule = module {
     factory { NewPostViewModel(get(), get()) }
     factory { PostDetailViewModel(get(), get(), get()) }
     factory { SearchViewModel(get()) }
+    factory { ProfileViewModel(get(), get()) }
 }
 
 fun initKoin() {

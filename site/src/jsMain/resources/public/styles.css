@@ -196,3 +196,32 @@ button { cursor: pointer; }
 .person-row:hover { background: var(--surface); }
 .person-text { flex: 1; min-width: 0; display: flex; flex-direction: column; }
 .person-row > .material-symbols-rounded { color: var(--muted); }
+.profile-card { display: flex; flex-direction: column; gap: 18px; }
+.profile-top { display: flex; align-items: center; gap: 16px; }
+.profile-info { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; min-width: 0; }
+.profile-name { margin: 0; font-size: 22px; font-weight: 600; line-height: 1.2; }
+.role-chip { padding: 3px 10px; border-radius: 999px; font-size: 12px; color: var(--gold); background: var(--gold-soft); border: 1px solid rgba(242, 184, 75, 0.35); }
+.badge-strip { display: flex; align-items: center; gap: 6px; margin-top: 2px; }
+.badge-strip img { width: 26px; height: 26px; border-radius: 8px; object-fit: cover; background: var(--surface); }
+.badge-more { font-size: 12px; color: var(--muted); }
+.profile-stats { display: grid; grid-template-columns: repeat(3, 1fr); padding-top: 14px; border-top: 1px solid var(--border); }
+.stat { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.stat-value { font-size: 20px; font-weight: 600; }
+.stat-label { font-size: 12px; color: var(--muted); }
+
+.post-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.post-tile { position: relative; aspect-ratio: 3 / 4; overflow: hidden; padding: 0; border-radius: 18px; border: 1px solid var(--border); background: linear-gradient(180deg, var(--card-top), var(--card-bottom)); text-align: left; }
+.post-tile:hover { border-color: rgba(242, 184, 75, 0.35); }
+.post-tile-image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.post-tile-text { position: absolute; top: 0; left: 0; right: 0; padding: 12px; font-size: 12px; line-height: 1.4; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 7; -webkit-box-orient: vertical; }
+.post-tile-stats { position: absolute; left: 8px; bottom: 8px; display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 999px; font-size: 11px; background: rgba(12, 6, 7, 0.6); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+.post-tile-stats .material-symbols-rounded { font-size: 14px; }
+
+.badge-list { display: flex; flex-direction: column; gap: 14px; }
+.badge-row { display: flex; align-items: center; gap: 12px; }
+.badge-icon { width: 44px; height: 44px; flex-shrink: 0; border-radius: 14px; object-fit: cover; background: var(--surface); }
+
+@media (max-width: 420px) {
+  .post-grid { gap: 6px; }
+  .profile-name { font-size: 19px; }
+}

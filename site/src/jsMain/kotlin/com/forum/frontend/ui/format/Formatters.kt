@@ -10,9 +10,11 @@ fun timeAgo(millis: Double): String {
         seconds < 3600 -> "hace ${floor(seconds / 60).toInt()} min"
         seconds < 86400 -> "hace ${floor(seconds / 3600).toInt()} h"
         seconds < 604800 -> "hace ${floor(seconds / 86400).toInt()} d"
-        else -> Date(millis).toLocaleDateString("es")
+        else -> formatDate(millis)
     }
 }
+
+fun formatDate(millis: Double): String = Date(millis).toLocaleDateString("es")
 
 fun compactCount(value: Int): String = when {
     value >= 1_000_000 -> "${oneDecimal(value / 1_000_000.0)} M"
