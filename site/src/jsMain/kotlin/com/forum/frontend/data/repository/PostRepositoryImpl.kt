@@ -29,11 +29,11 @@ class PostRepositoryImpl(
     override suspend fun getPost(id: Int): Post =
         api.get<DataResponse<PostDto>>("/posts/$id").data.toDomain()
 
-    override suspend fun createPost(spaceId: Int, content: String): Post =
+    override suspend fun createPost(spaceId: Int, content: String, mediaIds: List<String>): Post =
         api.send<CreatePostRequestDto, DataResponse<PostDto>>(
             HttpMethod.Post,
             "/posts",
-            CreatePostRequestDto(spaceId, content),
+            CreatePostRequestDto(spaceId, content.ifBlank { null }, mediaIds.ifEmpty { null }),
         ).data.toDomain()
 
     override suspend fun deletePost(id: Int) {

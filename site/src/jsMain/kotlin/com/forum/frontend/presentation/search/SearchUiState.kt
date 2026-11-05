@@ -4,13 +4,14 @@ import com.forum.frontend.domain.model.Post
 import com.forum.frontend.domain.model.UserSummary
 
 enum class SearchTab(val label: String) {
-    POSTS("Publicaciones"),
+    ALL("Todo"),
     PEOPLE("Personas"),
+    POSTS("Publicaciones"),
 }
 
 data class SearchUiState(
     val query: String = "",
-    val tab: SearchTab = SearchTab.POSTS,
+    val tab: SearchTab = SearchTab.ALL,
     val posts: List<Post> = emptyList(),
     val people: List<UserSummary> = emptyList(),
     val isLoading: Boolean = false,
@@ -23,8 +24,11 @@ data class SearchUiState(
     val isQueryTooShort: Boolean get() = query.trim().length < MIN_QUERY_LENGTH
 
     val isEmptyResult: Boolean
-        get() = hasSearched && !isLoading && error == null &&
-            if (tab == SearchTab.POSTS) posts.isEmpty() else people.isEmpty()
+        get() = hasSearched && !isLoading && error == null && when (tab) {
+            SearchTab.ALL -> posts.isEmpty() && people.isEmpty()
+            SearchTab.POSTS -> posts.isEmpty()
+            SearchTab.PEOPLE -> people.isEmpty()
+        }
 
     companion object {
         const val MIN_QUERY_LENGTH = 2

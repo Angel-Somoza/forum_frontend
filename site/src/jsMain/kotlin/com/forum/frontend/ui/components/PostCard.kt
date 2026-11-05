@@ -44,6 +44,12 @@ private fun MediaPostCard(
             classes("post-cover")
             attr("loading", "lazy")
         })
+        if (post.media.size > 1) {
+            Span({ classes("media-count") }) {
+                Icon("photo_library")
+                Text(post.media.size.toString())
+            }
+        }
         Div({ classes("post-overlay-top") }) {
             Div({ classes("author-pill") }) {
                 Avatar(post.author.firstName, post.author.lastName, post.author.pictureUrl, AvatarSize.SMALL)

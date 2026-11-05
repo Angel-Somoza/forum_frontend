@@ -5,6 +5,6 @@ import com.forum.frontend.domain.model.Post
 import com.forum.frontend.domain.model.UserSummary
 
 interface SearchRepository {
-    suspend fun searchPosts(query: String, page: Int): Paged<Post>
-    suspend fun searchPeople(query: String, page: Int): Paged<UserSummary>
+    suspend fun searchPosts(query: String, page: Int, limit: Int = 15): Paged<Post>
+    suspend fun searchPeople(query: String, page: Int, limit: Int = 15): Paged<UserSummary>
 }

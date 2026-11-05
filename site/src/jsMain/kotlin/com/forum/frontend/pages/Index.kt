@@ -30,5 +30,6 @@ fun HomePage() {
         onRetry = viewModel::retry,
         onLoadMore = viewModel::loadMore,
         onDismissMessage = viewModel::dismissMessage,
+        onComposeClick = { ctx.router.navigateTo("/new") },
     )
 }

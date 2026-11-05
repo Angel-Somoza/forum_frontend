@@ -30,6 +30,8 @@ fun NewPostPage() {
         state = state,
         onContentChange = viewModel::onContentChange,
         onSpaceSelect = viewModel::onSpaceSelect,
+        onFilesSelected = viewModel::addFiles,
+        onRemoveAttachment = viewModel::removeAttachment,
         onPublishClick = viewModel::submit,
         onCancelClick = { ctx.router.navigateTo("/") },
     )

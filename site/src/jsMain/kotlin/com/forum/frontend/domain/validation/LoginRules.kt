@@ -32,7 +32,7 @@ object LoginRules {
     }
 
     fun minPasswordFor(kind: AccountKind): Int =
-        if (kind == AccountKind.DEVELOPER) MIN_DEV_PASSWORD else MIN_PASSWORD
+        if (kind == AccountKind.CARNET) MIN_PASSWORD else MIN_DEV_PASSWORD
 
     fun validate(identifier: String, password: String): String? {
         if (identifier.isBlank()) return "Falta tu carnet"

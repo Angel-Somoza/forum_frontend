@@ -16,16 +16,12 @@ class SearchRepositoryImpl(
     private val api: ApiClient,
 ) : SearchRepository {
 
-    override suspend fun searchPosts(query: String, page: Int): Paged<Post> =
-        api.get<PageResponse<PostDto>>(path("posts", query, page)).toPaged { it.toDomain() }
+    override suspend fun searchPosts(query: String, page: Int, limit: Int): Paged<Post> =
+        api.get<PageResponse<PostDto>>(path("posts", query, page, limit)).toPaged { it.toDomain() }
 
-    override suspend fun searchPeople(query: String, page: Int): Paged<UserSummary> =
-        api.get<PageResponse<UserSummaryDto>>(path("users", query, page)).toPaged { it.toDomain() }
+    override suspend fun searchPeople(query: String, page: Int, limit: Int): Paged<UserSummary> =
+        api.get<PageResponse<UserSummaryDto>>(path("users", query, page, limit)).toPaged { it.toDomain() }
 
-    private fun path(type: String, query: String, page: Int): String =
-        "/search?type=$type&q=${query.encodeURLParameter()}&page=$page&limit=$PAGE_SIZE"
-
-    private companion object {
-        const val PAGE_SIZE = 15
-    }
+    private fun path(type: String, query: String, page: Int, limit: Int): String =
+        "/search?type=$type&q=${query.encodeURLParameter()}&page=$page&limit=${limit.coerceIn(1, 50)}"
 }

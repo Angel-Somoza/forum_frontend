@@ -8,6 +8,8 @@ sealed class AppError(override val message: String) : Exception(message) {
     class Validation : AppError("Algo no cuadra, revisa los datos")
     class Conflict : AppError("Eso ya existe")
     class RateLimited : AppError("Muchos intentos, espera un momento")
+    class TooLarge : AppError("El archivo pesa demasiado")
+    class UnsupportedMedia : AppError("Ese tipo de archivo no se puede subir")
     class Network : AppError("Sin conexión con el servidor")
     class Unknown : AppError("Algo salió mal")
 }

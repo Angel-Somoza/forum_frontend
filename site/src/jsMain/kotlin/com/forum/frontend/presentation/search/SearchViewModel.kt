@@ -5,6 +5,8 @@ import com.forum.frontend.domain.error.toUserMessage
 import com.forum.frontend.domain.repository.SearchRepository
 import com.forum.frontend.presentation.core.ViewModel
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,6 +22,11 @@ class SearchViewModel(
     val state: StateFlow<SearchUiState> = _state.asStateFlow()
 
     private var searchJob: Job? = null
+    private var previewLimit = PREVIEW_LIMIT
+
+    fun useCompactPreview() {
+        previewLimit = COMPACT_LIMIT
+    }
 
     fun onQueryChange(value: String) {
         _state.update { it.copy(query = value.take(MAX_QUERY_LENGTH)) }
@@ -45,7 +52,7 @@ class SearchViewModel(
 
     fun loadMore() {
         val current = _state.value
-        if (current.isLoading || current.isLoadingMore || !current.hasMore) return
+        if (current.tab == SearchTab.ALL || current.isLoading || current.isLoadingMore || !current.hasMore) return
         search(page = current.page + 1, debounce = false)
     }
 
@@ -73,6 +80,28 @@ class SearchViewModel(
             if (debounce) delay(DEBOUNCE_MS)
             _state.update { if (page == 1) it.copy(isLoading = true, error = null) else it.copy(isLoadingMore = true) }
             when (tab) {
+                SearchTab.ALL -> resultOf {
+                    coroutineScope {
+                        val people = async { searchRepository.searchPeople(term, 1, previewLimit) }
+                        val posts = async { searchRepository.searchPosts(term, 1, previewLimit) }
+                        people.await() to posts.await()
+                    }
+                }
+                    .onSuccess { (people, posts) ->
+                        _state.update {
+                            it.copy(
+                                people = people.items,
+                                posts = posts.items,
+                                page = 1,
+                                hasMore = false,
+                                isLoading = false,
+                                isLoadingMore = false,
+                                hasSearched = true,
+                            )
+                        }
+                    }
+                    .onFailure { showError(it) }
+
                 SearchTab.POSTS -> resultOf { searchRepository.searchPosts(term, page) }
                     .onSuccess { result ->
                         _state.update { s ->
@@ -113,7 +142,9 @@ class SearchViewModel(
     }
 
     private companion object {
-        const val DEBOUNCE_MS = 350L
+        const val DEBOUNCE_MS = 300L
         const val MAX_QUERY_LENGTH = 100
+        const val PREVIEW_LIMIT = 6
+        const val COMPACT_LIMIT = 4
     }
 }

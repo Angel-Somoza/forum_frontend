@@ -4,7 +4,9 @@ fun String?.toSafeUrl(): String? {
     val value = this?.trim().orEmpty()
     if (value.isEmpty()) return null
     val lower = value.lowercase()
-    val allowed = lower.startsWith("https://") || lower.startsWith("http://") ||
-        (value.startsWith("/") && !value.startsWith("//"))
-    return value.takeIf { allowed }
+    return when {
+        lower.startsWith("https://") || lower.startsWith("http://") -> value
+        value.startsWith("/") && !value.startsWith("//") && !value.contains("..") -> AppConfig.API_ORIGIN + value
+        else -> null
+    }
 }

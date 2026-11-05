@@ -21,8 +21,12 @@ fun SearchPage() {
     val viewModel = rememberViewModel<SearchViewModel>()
     val state by viewModel.state.collectAsState()
 
-    LaunchedEffect(Unit) {
+    val requested = ctx.route.params["q"].orEmpty().trim()
+
+    LaunchedEffect(requested) {
         document.title = "Buscar · Forum"
+        val initial = requested
+        if (initial.isNotEmpty()) viewModel.onQueryChange(initial)
         (document.getElementById("search-input") as? HTMLElement)?.focus()
     }
 

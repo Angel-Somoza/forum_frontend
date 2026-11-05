@@ -43,7 +43,8 @@ data class PostDto(
 @Serializable
 data class CreatePostRequestDto(
     @SerialName("space_id") val spaceId: Int,
-    val content: String,
+    val content: String? = null,
+    val media: List<String>? = null,
 )
 
 @Serializable

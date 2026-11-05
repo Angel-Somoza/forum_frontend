@@ -20,7 +20,11 @@ import io.ktor.http.HttpMethod
 import io.ktor.http.contentType
 import io.ktor.http.isSuccess
 import io.ktor.serialization.kotlinx.json.json
+import kotlinx.browser.window
+import kotlinx.coroutines.await
 import kotlinx.serialization.json.Json
+import org.w3c.fetch.RequestInit
+import org.w3c.files.File
 import kotlin.coroutines.cancellation.CancellationException
 
 class ApiClient(
@@ -28,11 +32,43 @@ class ApiClient(
     private val session: SessionStore,
     private val loading: LoadingTracker,
 ) {
+    @PublishedApi
+    internal val json = Json {
+        ignoreUnknownKeys = true
+        explicitNulls = false
+    }
+
     private val http = HttpClient(Js) {
         expectSuccess = false
         install(ContentNegotiation) {
-            json(Json { ignoreUnknownKeys = true })
+            json(json)
         }
+    }
+
+    suspend inline fun <reified T> uploadFile(path: String, file: File): T =
+        json.decodeFromString<T>(rawUpload(path, file))
+
+    @PublishedApi
+    internal suspend fun rawUpload(path: String, file: File): String = loading.request {
+        val headers = js("({})")
+        headers["Content-Type"] = file.type
+        session.token.value?.let { headers["Authorization"] = "Bearer $it" }
+        val response = try {
+            window.fetch(
+                baseUrl + path,
+                RequestInit(method = "POST", headers = headers, body = file),
+            ).await()
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Throwable) {
+            throw AppError.Network()
+        }
+        val text = response.text().await()
+        if (!response.ok) {
+            val code = resultOf { json.decodeFromString<ErrorResponseDto>(text).error.code }.getOrNull()
+            throw errorFor(response.status.toInt(), code)
+        }
+        text
     }
 
     suspend inline fun <reified T> get(path: String): T =
@@ -78,7 +114,12 @@ class ApiClient(
 
     private suspend fun toAppError(response: HttpResponse): AppError {
         val code = resultOf { response.body<ErrorResponseDto>().error.code }.getOrNull()
-        return when (response.status.value) {
+        return errorFor(response.status.value, code)
+    }
+
+    @PublishedApi
+    internal fun errorFor(status: Int, code: String?): AppError {
+        return when (status) {
             400 -> AppError.Validation()
             401 -> if (code == "INVALID_CREDENTIALS") {
                 AppError.InvalidCredentials()
@@ -89,6 +130,8 @@ class ApiClient(
             403 -> AppError.Forbidden()
             404 -> AppError.NotFound()
             409 -> AppError.Conflict()
+            413 -> AppError.TooLarge()
+            415 -> AppError.UnsupportedMedia()
             429 -> AppError.RateLimited()
             else -> AppError.Unknown()
         }

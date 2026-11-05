@@ -9,7 +9,10 @@ import com.forum.frontend.ui.components.LoadingCard
 import com.forum.frontend.ui.components.PostCard
 import com.forum.frontend.ui.components.Toast
 import org.jetbrains.compose.web.attributes.disabled
+import com.forum.frontend.ui.components.Icon
 import org.jetbrains.compose.web.dom.Button
+import org.jetbrains.compose.web.dom.Div
+import org.jetbrains.compose.web.dom.Span
 import org.jetbrains.compose.web.dom.H2
 import org.jetbrains.compose.web.dom.Text
 
@@ -22,7 +25,31 @@ fun FeedScreen(
     onRetry: () -> Unit,
     onLoadMore: () -> Unit,
     onDismissMessage: () -> Unit,
+    onComposeClick: () -> Unit = {},
 ) {
+    Div({ classes("card", "feed-composer") }) {
+        Button({
+            classes("feed-composer-input")
+            onClick { onComposeClick() }
+        }) { Text("¿Qué quieres compartir hoy?") }
+        Div({ classes("feed-composer-actions") }) {
+            listOf("image" to "Foto", "videocam" to "Video", "gif_box" to "GIF").forEach { (icon, label) ->
+                Button({
+                    classes("composer-chip")
+                    title(label)
+                    onClick { onComposeClick() }
+                }) {
+                    Icon(icon)
+                    Span { Text(label) }
+                }
+            }
+            Button({
+                classes("btn-gold")
+                onClick { onComposeClick() }
+            }) { Text("Publicar") }
+        }
+    }
+
     if (state.showSpaceFilter) {
         ChipGroup(
             options = listOf<Pair<Int?, String>>(null to "Todos") + state.spaces.map { it.id to it.name },

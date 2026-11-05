@@ -1,3 +1,24 @@
+# Forum Frontend
+
+## Entornos
+
+El frontend elige solo la URL del backend según dónde se abre:
+
+| Entorno | Cuándo | API |
+| ------- | ------ | --- |
+| `DEV`   | `localhost` / `127.0.0.1` | `http://localhost:3000/api/v1` |
+| `PROD`  | cualquier otro dominio | `Environment.PROD` en `core/AppConfig.kt` |
+
+Cuando el backend esté en la nube, cambia una sola línea (`PROD("https://...")`) en `site/src/jsMain/kotlin/com/forum/frontend/core/AppConfig.kt`, o sin recompilar agrega en el HTML publicado:
+
+```html
+<meta name="forum-api-origin" content="https://api.tu-dominio.com">
+```
+
+En producción solo se acepta `https://`. Las fotos y videos que devuelve el backend como `/media/...` se resuelven contra ese mismo origen, así que no hay URLs que cambiar a mano.
+
+En el backend agrega el dominio del frontend a `CORS_ORIGINS`.
+
 This is a [Kobweb](https://github.com/varabyte/kobweb) project bootstrapped with the `app` template.
 
 ## Getting Started

@@ -9,6 +9,9 @@ import com.forum.frontend.presentation.shell.AppShellViewModel
 import com.forum.frontend.ui.components.ScreenLoader
 import com.forum.frontend.ui.sections.AppHeader
 import com.forum.frontend.ui.sections.BottomNav
+import com.forum.frontend.ui.sections.RightRail
+import com.forum.frontend.ui.sections.SideNav
+import com.forum.frontend.ui.sections.TopBar
 import com.varabyte.kobweb.core.layout.Layout
 import com.varabyte.kobweb.core.rememberPageContext
 import org.jetbrains.compose.web.dom.Div
@@ -22,6 +25,7 @@ fun AppLayout(content: @Composable () -> Unit) {
     val user by viewModel.currentUser.collectAsState()
     val unreadCount by viewModel.unreadCount.collectAsState()
     val path = ctx.route.path
+    val navigate: (String) -> Unit = { target -> ctx.router.navigateTo(target) }
 
     LaunchedEffect(user) {
         if (user == null) ctx.router.navigateTo("/login")
@@ -37,19 +41,29 @@ fun AppLayout(content: @Composable () -> Unit) {
     }
 
     Div({ classes("app-shell") }) {
+        TopBar(user = currentUser, onNavigate = navigate)
         AppHeader(
             user = currentUser,
-            onProfileClick = { ctx.router.navigateTo("/profile") },
+            onProfileClick = { navigate("/profile") },
             onLogoutClick = viewModel::logout,
         )
-        Main({ classes("app-content") }) {
-            content()
+        Div({ classes("app-body") }) {
+            SideNav(
+                currentPath = path,
+                unreadCount = unreadCount,
+                onNavigate = navigate,
+                onLogoutClick = viewModel::logout,
+            )
+            Main({ classes("app-content") }) {
+                content()
+            }
+            RightRail(user = currentUser, onNavigate = navigate)
         }
         BottomNav(
             currentPath = path,
             unreadCount = unreadCount,
-            onNavigate = { target -> ctx.router.navigateTo(target) },
-            onCreateClick = { ctx.router.navigateTo("/new") },
+            onNavigate = navigate,
+            onCreateClick = { navigate("/new") },
         )
     }
 }

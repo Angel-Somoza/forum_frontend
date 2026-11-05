@@ -7,6 +7,7 @@ enum class Role(val label: String) {
     TEACHER("Catedrático"),
     UNIVERSITY("Universitario"),
     DEVELOPER("Developer"),
+    ADMIN("Administrador"),
     UNKNOWN("Usuario");
 
     companion object {
@@ -15,6 +16,7 @@ enum class Role(val label: String) {
             "Catedratico" -> TEACHER
             "Universitario" -> UNIVERSITY
             "Developer" -> DEVELOPER
+            "Administrador" -> ADMIN
             else -> UNKNOWN
         }
     }
@@ -31,4 +33,5 @@ data class CurrentUser(
 ) {
     val fullName: String get() = "$firstName $lastName"
     val isDeveloper: Boolean get() = role == Role.DEVELOPER
+    val isStaff: Boolean get() = role == Role.DEVELOPER || role == Role.ADMIN
 }

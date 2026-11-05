@@ -9,6 +9,7 @@ import com.forum.frontend.data.repository.NotificationRepositoryImpl
 import com.forum.frontend.data.repository.PostRepositoryImpl
 import com.forum.frontend.data.repository.ProfileRepositoryImpl
 import com.forum.frontend.data.repository.SearchRepositoryImpl
+import com.forum.frontend.data.repository.UploadRepositoryImpl
 import com.forum.frontend.data.session.SessionStore
 import com.forum.frontend.domain.repository.AuthRepository
 import com.forum.frontend.domain.repository.CommentRepository
@@ -16,6 +17,7 @@ import com.forum.frontend.domain.repository.NotificationRepository
 import com.forum.frontend.domain.repository.PostRepository
 import com.forum.frontend.domain.repository.ProfileRepository
 import com.forum.frontend.domain.repository.SearchRepository
+import com.forum.frontend.domain.repository.UploadRepository
 import com.forum.frontend.presentation.feed.FeedViewModel
 import com.forum.frontend.presentation.login.LoginViewModel
 import com.forum.frontend.presentation.newpost.NewPostViewModel
@@ -38,13 +40,14 @@ val dataModule = module {
     single<CommentRepository> { CommentRepositoryImpl(get()) }
     single<SearchRepository> { SearchRepositoryImpl(get()) }
     single<ProfileRepository> { ProfileRepositoryImpl(get()) }
+    single<UploadRepository> { UploadRepositoryImpl(get()) }
 }
 
 val presentationModule = module {
     factory { LoginViewModel(get(), get()) }
     factory { AppShellViewModel(get(), get(), get()) }
     factory { FeedViewModel(get(), get()) }
-    factory { NewPostViewModel(get(), get(), get()) }
+    factory { NewPostViewModel(get(), get(), get(), get()) }
     factory { PostDetailViewModel(get(), get(), get(), get()) }
     factory { SearchViewModel(get()) }
     factory { ProfileViewModel(get(), get()) }

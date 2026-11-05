@@ -12,6 +12,7 @@ import com.forum.frontend.ui.components.ErrorCard
 import com.forum.frontend.ui.components.Icon
 import com.forum.frontend.ui.components.LoadingCard
 import com.forum.frontend.ui.components.PostText
+import com.forum.frontend.ui.components.cls
 import com.forum.frontend.ui.format.compactCount
 import com.forum.frontend.ui.format.timeAgo
 import org.jetbrains.compose.web.attributes.InputType
@@ -19,6 +20,7 @@ import org.jetbrains.compose.web.attributes.disabled
 import org.jetbrains.compose.web.attributes.placeholder
 import org.jetbrains.compose.web.dom.Button
 import org.jetbrains.compose.web.dom.Div
+import org.jetbrains.compose.web.dom.H3
 import org.jetbrains.compose.web.dom.Input
 import org.jetbrains.compose.web.dom.Span
 import org.jetbrains.compose.web.dom.Text
@@ -34,24 +36,13 @@ fun SearchScreen(
     onRetry: () -> Unit,
     onLoadMore: () -> Unit,
 ) {
-    Div({ classes("search-bar") }) {
-        Icon("search")
-        Input(InputType.Search) {
-            id("search-input")
-            classes("search-input")
-            placeholder("Buscar")
-            attr("autocomplete", "off")
-            value(state.query)
-            onInput { onQueryChange(it.value) }
-        }
-        if (state.query.isNotEmpty()) {
-            Button({
-                classes("link-button")
-                title("Limpiar")
-                onClick { onClearClick() }
-            }) { Icon("close") }
-        }
-    }
+    SearchField(
+        inputId = "search-input",
+        query = state.query,
+        isSearching = state.isLoading,
+        onQueryChange = onQueryChange,
+        onClearClick = onClearClick,
+    )
 
     ChipGroup(
         options = SearchTab.entries.map { it.ordinal to it.label },
@@ -60,10 +51,30 @@ fun SearchScreen(
     )
 
     when {
-        state.isQueryTooShort -> EmptyCard(icon = "search", title = "Personas o publicaciones")
-        state.isLoading -> LoadingCard()
+        state.isQueryTooShort -> EmptyCard(icon = "travel_explore", title = "Busca personas o publicaciones")
+        state.isLoading && !state.hasSearched -> LoadingCard()
         state.error != null -> ErrorCard(state.error, onRetry)
-        state.isEmptyResult -> EmptyCard(icon = "search_off", title = "Sin resultados")
+        state.isEmptyResult -> EmptyCard(icon = "search_off", title = "Sin resultados para \"${state.query.trim()}\"")
+        state.tab == SearchTab.ALL -> {
+            if (state.people.isNotEmpty()) {
+                Div({ classes("card", "people-list") }) {
+                    SectionHeader("Personas", onSeeAll = { onTabSelect(SearchTab.PEOPLE) })
+                    state.people.forEach { person ->
+                        key(person.id) { PersonResult(person, onOpen = { onPersonOpen(person.id) }) }
+                    }
+                }
+            }
+            if (state.posts.isNotEmpty()) {
+                H3({ classes("section-title") }) { Text("Publicaciones") }
+                state.posts.forEach { post ->
+                    key(post.id) { PostResult(post, onOpen = { onPostOpen(post.id) }) }
+                }
+                Button({
+                    classes("load-more")
+                    onClick { onTabSelect(SearchTab.POSTS) }
+                }) { Text("Ver todas las publicaciones") }
+            }
+        }
         state.tab == SearchTab.POSTS -> state.posts.forEach { post ->
             key(post.id) { PostResult(post, onOpen = { onPostOpen(post.id) }) }
         }
@@ -74,12 +85,64 @@ fun SearchScreen(
         }
     }
 
-    if (!state.isQueryTooShort && !state.isLoading && state.hasMore) {
+    if (state.tab != SearchTab.ALL && !state.isQueryTooShort && !state.isLoading && state.hasMore) {
         Button({
             classes("load-more")
             if (state.isLoadingMore) disabled()
             onClick { onLoadMore() }
         }) { Text(if (state.isLoadingMore) "Cargando..." else "Ver más") }
+    }
+}
+
+@Composable
+fun SearchField(
+    inputId: String,
+    query: String,
+    isSearching: Boolean,
+    onQueryChange: (String) -> Unit,
+    onClearClick: () -> Unit,
+    placeholderText: String = "Buscar en el foro",
+    onFocus: () -> Unit = {},
+    onSubmit: () -> Unit = {},
+    onEscape: () -> Unit = {},
+) {
+    Div({ classes(*cls("search-bar", if (isSearching) "searching" else null)) }) {
+        Span({ classes("search-icon") }) { Icon("search") }
+        Input(InputType.Search) {
+            id(inputId)
+            classes("search-input")
+            placeholder(placeholderText)
+            attr("autocomplete", "off")
+            attr("aria-label", placeholderText)
+            attr("maxlength", "100")
+            value(query)
+            onInput { onQueryChange(it.value) }
+            onFocus { onFocus() }
+            onKeyDown { event ->
+                when (event.key) {
+                    "Enter" -> onSubmit()
+                    "Escape" -> onEscape()
+                }
+            }
+        }
+        if (query.isNotEmpty()) {
+            Button({
+                classes("link-button", "search-clear")
+                title("Limpiar")
+                onClick { onClearClick() }
+            }) { Icon("close") }
+        }
+    }
+}
+
+@Composable
+private fun SectionHeader(title: String, onSeeAll: () -> Unit) {
+    Div({ classes("results-header") }) {
+        Span({ classes("results-title") }) { Text(title) }
+        Button({
+            classes("link-button", "see-all")
+            onClick { onSeeAll() }
+        }) { Text("Ver todo") }
     }
 }
 
@@ -99,6 +162,10 @@ private fun PostResult(post: Post, onOpen: () -> Unit) {
         }
         if (post.content.isNotBlank()) PostText(post.content, clamp = true)
         Div({ classes("result-meta") }) {
+            if (post.media.isNotEmpty()) {
+                Icon("photo_library")
+                Span { Text(post.media.size.toString()) }
+            }
             Icon("favorite")
             Span { Text(compactCount(post.reactionCount)) }
             Icon("chat_bubble")
@@ -108,7 +175,7 @@ private fun PostResult(post: Post, onOpen: () -> Unit) {
 }
 
 @Composable
-private fun PersonResult(person: UserSummary, onOpen: () -> Unit) {
+fun PersonResult(person: UserSummary, onOpen: () -> Unit) {
     Button({
         classes("person-row")
         onClick { onOpen() }

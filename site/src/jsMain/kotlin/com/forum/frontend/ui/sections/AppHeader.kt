@@ -24,7 +24,7 @@ fun AppHeader(
             Avatar(user.firstName, user.lastName, user.profilePictureUrl)
             Div({ classes("header-user-text") }) {
                 Span({ classes("header-name") }) { Text(user.fullName) }
-                Span({ classes("header-handle") }) { Text("@${user.carnet.lowercase()} · ${user.role.label}") }
+                Span({ classes("header-handle") }) { Text(user.role.label) }
             }
         }
         Div({ classes("header-actions") }) {
