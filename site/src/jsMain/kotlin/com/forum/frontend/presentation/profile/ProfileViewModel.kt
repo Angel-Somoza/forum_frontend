@@ -8,6 +8,7 @@ import com.forum.frontend.domain.repository.AuthRepository
 import com.forum.frontend.domain.repository.PostRepository
 import com.forum.frontend.domain.repository.ProfileRepository
 import com.forum.frontend.presentation.core.ViewModel
+import com.forum.frontend.presentation.share.ShareController
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -21,9 +22,24 @@ class ProfileViewModel(
     private val profileRepository: ProfileRepository,
     private val postRepository: PostRepository,
     authRepository: AuthRepository,
+    shareController: ShareController,
 ) : ViewModel() {
 
     private val pendingLikes = mutableSetOf<Int>()
+
+    init {
+        scope.launch {
+            shareController.shared.collect { created ->
+                _state.update { s ->
+                    val counted = s.posts.map {
+                        if (it.id == created.sharedPostId) it.copy(shareCount = it.shareCount + 1) else it
+                    }
+                    val mine = s.isOwnProfile && s.posts.none { it.id == created.id }
+                    s.copy(posts = if (mine) listOf(created) + counted else counted)
+                }
+            }
+        }
+    }
 
     private val currentUserId = authRepository.currentUser.value?.id
 

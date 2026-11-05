@@ -15,6 +15,7 @@ fun AppHeader(
     user: CurrentUser,
     onProfileClick: () -> Unit,
     onLogoutClick: () -> Unit,
+    onAdminClick: (() -> Unit)? = null,
 ) {
     Header({ classes("app-header") }) {
         Button({
@@ -28,6 +29,13 @@ fun AppHeader(
             }
         }
         Div({ classes("header-actions") }) {
+            onAdminClick?.let { open ->
+                Button({
+                    classes("round-button")
+                    title("Administración")
+                    onClick { open() }
+                }) { Icon("admin_panel_settings") }
+            }
             Button({
                 classes("round-button")
                 title("Cerrar sesión")

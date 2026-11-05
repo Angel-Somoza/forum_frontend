@@ -3,6 +3,7 @@ package com.forum.frontend.presentation.profile
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
 import com.forum.frontend.domain.model.Badge
+import com.forum.frontend.domain.model.Post
 import com.forum.frontend.domain.model.UserProfile
 import com.forum.frontend.ui.components.Avatar
 import com.forum.frontend.ui.components.AvatarSize
@@ -33,6 +34,7 @@ fun ProfileScreen(
     onPostOpen: (Int) -> Unit,
     onLikeClick: (Int) -> Unit,
     onComposeClick: () -> Unit,
+    onShareClick: (Post) -> Unit,
     onRetry: () -> Unit,
     onLoadMore: () -> Unit,
     onDismissMessage: () -> Unit,
@@ -43,7 +45,7 @@ fun ProfileScreen(
         state.profile != null -> {
             ProfileHero(state.profile, state.badges, state.tab, state.isOwnProfile, onTabSelect, onComposeClick)
             when (state.tab) {
-                ProfileTab.POSTS -> PostsTab(state, onPostOpen, onLikeClick, onComposeClick, onLoadMore)
+                ProfileTab.POSTS -> PostsTab(state, onPostOpen, onLikeClick, onComposeClick, onShareClick, onLoadMore)
                 ProfileTab.BADGES -> BadgesTab(state)
             }
         }
@@ -137,6 +139,7 @@ private fun PostsTab(
     onPostOpen: (Int) -> Unit,
     onLikeClick: (Int) -> Unit,
     onComposeClick: () -> Unit,
+    onShareClick: (Post) -> Unit,
     onLoadMore: () -> Unit,
 ) {
     if (state.posts.isEmpty()) {
@@ -158,6 +161,8 @@ private fun PostsTab(
                 post = post,
                 onLikeClick = { onLikeClick(post.id) },
                 onCommentsClick = { onPostOpen(post.id) },
+                onShareClick = { onShareClick(post) },
+                onOpenPost = onPostOpen,
             )
         }
     }

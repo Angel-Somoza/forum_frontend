@@ -7,6 +7,7 @@ import androidx.compose.runtime.getValue
 import com.forum.frontend.presentation.core.rememberViewModel
 import com.forum.frontend.presentation.postdetail.PostDetailScreen
 import com.forum.frontend.presentation.postdetail.PostDetailViewModel
+import com.forum.frontend.presentation.share.rememberShareController
 import com.forum.frontend.ui.components.EmptyCard
 import com.varabyte.kobweb.core.Page
 import com.varabyte.kobweb.core.layout.Layout
@@ -22,6 +23,7 @@ fun PostPage() {
     val ctx = rememberPageContext()
     val postId = ctx.route.params["id"]?.toIntOrNull()
     val viewModel = rememberViewModel<PostDetailViewModel>()
+    val shareController = rememberShareController()
     val state by viewModel.state.collectAsState()
 
     LaunchedEffect(postId) {
@@ -58,5 +60,7 @@ fun PostPage() {
         onSendClick = viewModel::sendComment,
         onRetry = viewModel::retry,
         onDismissMessage = viewModel::dismissMessage,
+        onShareClick = shareController::open,
+        onOpenPost = { id -> ctx.router.navigateTo("/post?id=$id") },
     )
 }

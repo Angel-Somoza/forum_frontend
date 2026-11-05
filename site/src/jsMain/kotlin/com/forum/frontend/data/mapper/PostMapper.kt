@@ -27,10 +27,17 @@ fun MediaDto.toDomain(): Media? {
 
 fun SharedPostDto.toDomain(): SharedPost = SharedPost(
     id = id,
-    authorName = "$authorFirstName $authorLastName",
-    authorPictureUrl = authorPictureUrl.toSafeUrl(),
+    author = Author(
+        id = userId ?: 0,
+        firstName = authorFirstName,
+        lastName = authorLastName,
+        pictureUrl = authorPictureUrl.toSafeUrl(),
+        role = authorRoleName?.let { Role.fromApi(it) } ?: Role.UNKNOWN,
+    ),
+    spaceName = spaceName,
     content = content.orEmpty(),
     createdAt = parseApiDate(createdAt),
+    media = media.sortedBy { it.sortOrder }.mapNotNull { it.toDomain() },
 )
 
 fun PostDto.toDomain(): Post = Post(
@@ -51,4 +58,6 @@ fun PostDto.toDomain(): Post = Post(
     myReaction = myReaction?.let { ReactionType.fromApi(it) },
     commentCount = commentCount,
     sharedPost = sharedPost?.toDomain(),
+    sharedPostId = sharedPostId,
+    shareCount = shareCount,
 )

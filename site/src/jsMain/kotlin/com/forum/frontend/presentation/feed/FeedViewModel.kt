@@ -7,6 +7,7 @@ import com.forum.frontend.domain.model.ReactionType
 import com.forum.frontend.domain.repository.AuthRepository
 import com.forum.frontend.domain.repository.PostRepository
 import com.forum.frontend.presentation.core.ViewModel
+import com.forum.frontend.presentation.share.ShareController
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,6 +18,7 @@ import kotlinx.coroutines.launch
 class FeedViewModel(
     private val postRepository: PostRepository,
     authRepository: AuthRepository,
+    shareController: ShareController,
 ) : ViewModel() {
 
     private val spaces = authRepository.currentUser.value?.spaces.orEmpty()
@@ -31,6 +33,19 @@ class FeedViewModel(
 
     init {
         loadFirstPage()
+        scope.launch {
+            shareController.shared.collect { created -> onShared(created) }
+        }
+    }
+
+    private fun onShared(created: Post) {
+        _state.update { s ->
+            val counted = s.posts.map {
+                if (it.id == created.sharedPostId) it.copy(shareCount = it.shareCount + 1) else it
+            }
+            val visible = s.selectedSpaceId == null || s.selectedSpaceId == created.spaceId
+            s.copy(posts = if (visible && counted.none { it.id == created.id }) listOf(created) + counted else counted)
+        }
     }
 
     fun selectSpace(spaceId: Int?) {

@@ -3,6 +3,7 @@ package com.forum.frontend.presentation.postdetail
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
 import com.forum.frontend.domain.model.CommentNode
+import com.forum.frontend.domain.model.Post
 import com.forum.frontend.ui.components.Avatar
 import com.forum.frontend.ui.components.AvatarSize
 import com.forum.frontend.ui.components.ErrorCard
@@ -42,6 +43,8 @@ fun PostDetailScreen(
     onSendClick: () -> Unit,
     onRetry: () -> Unit,
     onDismissMessage: () -> Unit,
+    onShareClick: (Post) -> Unit = {},
+    onOpenPost: (Int) -> Unit = {},
 ) {
     Div({ classes("detail-header") }) {
         Button({
@@ -63,6 +66,8 @@ fun PostDetailScreen(
                 onCommentsClick = {},
                 expanded = true,
                 onDeleteClick = if (state.canDelete(post.author.id)) onDeletePostClick else null,
+                onShareClick = { onShareClick(post) },
+                onOpenPost = onOpenPost,
             )
             H2({ classes("section-title") }) { Text("Comentarios · ${post.commentCount}") }
             Div({ classes("card", "comments-card") }) {

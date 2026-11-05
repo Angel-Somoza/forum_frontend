@@ -37,10 +37,11 @@ enum class ReactionType {
 
 data class SharedPost(
     val id: Int,
-    val authorName: String,
-    val authorPictureUrl: String?,
+    val author: Author,
+    val spaceName: String?,
     val content: String,
     val createdAt: Double,
+    val media: List<Media>,
 )
 
 data class Post(
@@ -55,7 +56,10 @@ data class Post(
     val myReaction: ReactionType?,
     val commentCount: Int,
     val sharedPost: SharedPost?,
+    val sharedPostId: Int? = null,
+    val shareCount: Int = 0,
 ) {
+    val isShare: Boolean get() = sharedPostId != null
     val isLiked: Boolean get() = myReaction != null
     val coverMedia: Media? get() = media.firstOrNull { it.type != MediaType.VIDEO }
     val videos: List<Media> get() = media.filter { it.type == MediaType.VIDEO }

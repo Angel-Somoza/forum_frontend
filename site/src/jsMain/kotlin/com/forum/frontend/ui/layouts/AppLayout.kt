@@ -6,6 +6,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import com.forum.frontend.presentation.core.rememberViewModel
 import com.forum.frontend.presentation.shell.AppShellViewModel
+import com.forum.frontend.presentation.share.ShareDialog
 import com.forum.frontend.ui.components.ScreenLoader
 import com.forum.frontend.ui.sections.AppHeader
 import com.forum.frontend.ui.sections.BottomNav
@@ -45,11 +46,13 @@ fun AppLayout(content: @Composable () -> Unit) {
         AppHeader(
             user = currentUser,
             onProfileClick = { navigate("/profile") },
+            onAdminClick = if (currentUser.isStaff) ({ navigate("/admin") }) else null,
             onLogoutClick = viewModel::logout,
         )
         Div({ classes("app-body") }) {
             SideNav(
                 currentPath = path,
+                isStaff = currentUser.isStaff,
                 unreadCount = unreadCount,
                 onNavigate = navigate,
                 onLogoutClick = viewModel::logout,
@@ -65,5 +68,6 @@ fun AppLayout(content: @Composable () -> Unit) {
             onNavigate = navigate,
             onCreateClick = { navigate("/new") },
         )
+        ShareDialog()
     }
 }

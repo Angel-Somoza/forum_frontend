@@ -2,6 +2,7 @@ package com.forum.frontend.presentation.feed
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
+import com.forum.frontend.domain.model.Post
 import com.forum.frontend.ui.components.ChipGroup
 import com.forum.frontend.ui.components.EmptyCard
 import com.forum.frontend.ui.components.ErrorCard
@@ -26,6 +27,8 @@ fun FeedScreen(
     onLoadMore: () -> Unit,
     onDismissMessage: () -> Unit,
     onComposeClick: () -> Unit = {},
+    onShareClick: (Post) -> Unit = {},
+    onOpenPost: (Int) -> Unit = {},
 ) {
     Div({ classes("card", "feed-composer") }) {
         Button({
@@ -71,6 +74,8 @@ fun FeedScreen(
                         post = post,
                         onLikeClick = { onLikeClick(post.id) },
                         onCommentsClick = { onCommentsClick(post.id) },
+                        onShareClick = { onShareClick(post) },
+                        onOpenPost = onOpenPost,
                     )
                 }
             }

@@ -21,13 +21,14 @@ private val items = listOf(
 @Composable
 fun SideNav(
     currentPath: String,
+    isStaff: Boolean,
     unreadCount: Int,
     onNavigate: (String) -> Unit,
     onLogoutClick: () -> Unit,
 ) {
     Aside({ classes("side-nav") }) {
         Nav({ classes("side-menu") }) {
-            items.forEach { item ->
+            (if (isStaff) items + SideItem("/admin", "admin_panel_settings", "Administración") else items).forEach { item ->
                 val active = item.path == currentPath
                 Button({
                     classes(*cls("side-item", if (active) "active" else null))

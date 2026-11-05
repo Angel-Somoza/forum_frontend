@@ -7,6 +7,7 @@ import androidx.compose.runtime.getValue
 import com.forum.frontend.presentation.core.rememberViewModel
 import com.forum.frontend.presentation.profile.ProfileScreen
 import com.forum.frontend.presentation.profile.ProfileViewModel
+import com.forum.frontend.presentation.share.rememberShareController
 import com.varabyte.kobweb.core.Page
 import com.varabyte.kobweb.core.layout.Layout
 import com.varabyte.kobweb.core.rememberPageContext
@@ -19,6 +20,7 @@ fun ProfilePage() {
     val ctx = rememberPageContext()
     val requestedId = ctx.route.params["id"]?.toIntOrNull()
     val viewModel = rememberViewModel<ProfileViewModel>()
+    val shareController = rememberShareController()
     val state by viewModel.state.collectAsState()
 
     LaunchedEffect(requestedId) {
@@ -35,6 +37,7 @@ fun ProfilePage() {
         onPostOpen = { id -> ctx.router.navigateTo("/post?id=$id") },
         onLikeClick = viewModel::toggleLike,
         onComposeClick = { ctx.router.navigateTo("/new") },
+        onShareClick = shareController::open,
         onRetry = viewModel::retry,
         onLoadMore = viewModel::loadMore,
         onDismissMessage = viewModel::dismissMessage,

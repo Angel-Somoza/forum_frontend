@@ -7,6 +7,7 @@ import androidx.compose.runtime.getValue
 import com.forum.frontend.presentation.core.rememberViewModel
 import com.forum.frontend.presentation.feed.FeedScreen
 import com.forum.frontend.presentation.feed.FeedViewModel
+import com.forum.frontend.presentation.share.rememberShareController
 import com.varabyte.kobweb.core.Page
 import com.varabyte.kobweb.core.layout.Layout
 import com.varabyte.kobweb.core.rememberPageContext
@@ -18,6 +19,7 @@ import kotlinx.browser.document
 fun HomePage() {
     val ctx = rememberPageContext()
     val viewModel = rememberViewModel<FeedViewModel>()
+    val shareController = rememberShareController()
     val state by viewModel.state.collectAsState()
 
     LaunchedEffect(Unit) { document.title = "Inicio · Forum" }
@@ -31,5 +33,7 @@ fun HomePage() {
         onLoadMore = viewModel::loadMore,
         onDismissMessage = viewModel::dismissMessage,
         onComposeClick = { ctx.router.navigateTo("/new") },
+        onShareClick = shareController::open,
+        onOpenPost = { id -> ctx.router.navigateTo("/post?id=$id") },
     )
 }

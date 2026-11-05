@@ -14,11 +14,15 @@ data class MediaDto(
 @Serializable
 data class SharedPostDto(
     @SerialName("post_id") val id: Int,
+    @SerialName("user_id") val userId: Int? = null,
+    @SerialName("space_name") val spaceName: String? = null,
     val content: String? = null,
     @SerialName("created_at") val createdAt: String,
     @SerialName("author_first_name") val authorFirstName: String,
     @SerialName("author_last_name") val authorLastName: String,
     @SerialName("author_profile_picture_url") val authorPictureUrl: String? = null,
+    @SerialName("author_role_name") val authorRoleName: String? = null,
+    val media: List<MediaDto> = emptyList(),
 )
 
 @Serializable
@@ -33,7 +37,9 @@ data class PostDto(
     @SerialName("author_last_name") val authorLastName: String,
     @SerialName("author_profile_picture_url") val authorPictureUrl: String? = null,
     @SerialName("author_role_name") val authorRoleName: String,
+    @SerialName("shared_post_id") val sharedPostId: Int? = null,
     @SerialName("shared_post") val sharedPost: SharedPostDto? = null,
+    @SerialName("share_count") val shareCount: Int = 0,
     val media: List<MediaDto> = emptyList(),
     @SerialName("reaction_count") val reactionCount: Int = 0,
     @SerialName("my_reaction") val myReaction: String? = null,
@@ -45,6 +51,7 @@ data class CreatePostRequestDto(
     @SerialName("space_id") val spaceId: Int,
     val content: String? = null,
     val media: List<String>? = null,
+    @SerialName("shared_post_id") val sharedPostId: Int? = null,
 )
 
 @Serializable
