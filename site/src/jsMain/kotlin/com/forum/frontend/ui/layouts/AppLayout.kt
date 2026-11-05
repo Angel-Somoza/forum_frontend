@@ -48,7 +48,7 @@ fun AppLayout(content: @Composable () -> Unit) {
             currentPath = path,
             unreadCount = unreadCount,
             onNavigate = { target -> ctx.router.navigateTo(target) },
-            onCreateClick = { ctx.router.navigateTo("/") },
+            onCreateClick = { ctx.router.navigateTo("/new") },
         )
     }
 }

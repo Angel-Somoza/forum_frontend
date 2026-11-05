@@ -1,0 +1,110 @@
+package com.forum.frontend.presentation.feed
+
+import com.forum.frontend.core.resultOf
+import com.forum.frontend.domain.error.toUserMessage
+import com.forum.frontend.domain.model.Post
+import com.forum.frontend.domain.model.ReactionType
+import com.forum.frontend.domain.repository.AuthRepository
+import com.forum.frontend.domain.repository.PostRepository
+import com.forum.frontend.presentation.core.ViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+
+class FeedViewModel(
+    private val postRepository: PostRepository,
+    authRepository: AuthRepository,
+) : ViewModel() {
+
+    private val spaces = authRepository.currentUser.value?.spaces.orEmpty()
+
+    private val _state = MutableStateFlow(
+        FeedUiState(spaces = spaces, showSpaceFilter = spaces.size > 1),
+    )
+    val state: StateFlow<FeedUiState> = _state.asStateFlow()
+
+    private var loadJob: Job? = null
+    private val pendingLikes = mutableSetOf<Int>()
+
+    init {
+        loadFirstPage()
+    }
+
+    fun selectSpace(spaceId: Int?) {
+        if (spaceId == _state.value.selectedSpaceId) return
+        _state.update { it.copy(selectedSpaceId = spaceId) }
+        loadFirstPage()
+    }
+
+    fun retry() {
+        loadFirstPage()
+    }
+
+    fun loadMore() {
+        val current = _state.value
+        if (current.isLoading || current.isLoadingMore || !current.hasMore) return
+        _state.update { it.copy(isLoadingMore = true) }
+        loadJob = scope.launch {
+            resultOf { postRepository.getFeed(current.page + 1, current.selectedSpaceId) }
+                .onSuccess { result ->
+                    _state.update { s ->
+                        s.copy(
+                            posts = s.posts + result.items.filter { new -> s.posts.none { old -> old.id == new.id } },
+                            page = result.page,
+                            hasMore = result.hasMore,
+                            isLoadingMore = false,
+                        )
+                    }
+                }
+                .onFailure { error -> _state.update { it.copy(isLoadingMore = false, message = error.toUserMessage()) } }
+        }
+    }
+
+    fun toggleLike(postId: Int) {
+        if (postId in pendingLikes) return
+        val original = _state.value.posts.firstOrNull { it.id == postId } ?: return
+        val wasLiked = original.isLiked
+        replacePost(
+            original.copy(
+                myReaction = if (wasLiked) null else ReactionType.LIKE,
+                reactionCount = original.reactionCount + if (wasLiked) -1 else 1,
+            ),
+        )
+        pendingLikes += postId
+        scope.launch {
+            resultOf {
+                if (wasLiked) postRepository.removeReaction(postId) else postRepository.react(postId, ReactionType.LIKE)
+            }.onFailure { error ->
+                replacePost(original)
+                _state.update { it.copy(message = error.toUserMessage()) }
+            }
+            pendingLikes -= postId
+        }
+    }
+
+    fun dismissMessage() {
+        _state.update { it.copy(message = null) }
+    }
+
+    private fun loadFirstPage() {
+        loadJob?.cancel()
+        val spaceId = _state.value.selectedSpaceId
+        _state.update { it.copy(isLoading = true, error = null, posts = emptyList(), page = 0, hasMore = false) }
+        loadJob = scope.launch {
+            resultOf { postRepository.getFeed(1, spaceId) }
+                .onSuccess { result ->
+                    _state.update {
+                        it.copy(isLoading = false, posts = result.items, page = result.page, hasMore = result.hasMore)
+                    }
+                }
+                .onFailure { error -> _state.update { it.copy(isLoading = false, error = error.toUserMessage()) } }
+        }
+    }
+
+    private fun replacePost(post: Post) {
+        _state.update { s -> s.copy(posts = s.posts.map { if (it.id == post.id) post else it }) }
+    }
+}

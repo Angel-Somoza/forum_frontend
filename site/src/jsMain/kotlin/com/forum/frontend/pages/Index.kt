@@ -2,23 +2,33 @@ package com.forum.frontend.pages
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import com.forum.frontend.ui.components.Icon
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import com.forum.frontend.presentation.core.rememberViewModel
+import com.forum.frontend.presentation.feed.FeedScreen
+import com.forum.frontend.presentation.feed.FeedViewModel
 import com.varabyte.kobweb.core.Page
 import com.varabyte.kobweb.core.layout.Layout
+import com.varabyte.kobweb.core.rememberPageContext
 import kotlinx.browser.document
-import org.jetbrains.compose.web.dom.Div
-import org.jetbrains.compose.web.dom.H2
-import org.jetbrains.compose.web.dom.P
-import org.jetbrains.compose.web.dom.Text
 
 @Page
 @Layout(".ui.layouts.AppLayout")
 @Composable
 fun HomePage() {
+    val ctx = rememberPageContext()
+    val viewModel = rememberViewModel<FeedViewModel>()
+    val state by viewModel.state.collectAsState()
+
     LaunchedEffect(Unit) { document.title = "Inicio · Forum" }
-    Div({ classes("card", "empty-state") }) {
-        Icon("dynamic_feed")
-        H2 { Text("Publicaciones") }
-        P { Text("Aquí aparecerán las publicaciones de tu espacio") }
-    }
+
+    FeedScreen(
+        state = state,
+        onSpaceSelect = viewModel::selectSpace,
+        onLikeClick = viewModel::toggleLike,
+        onCommentsClick = { id -> ctx.router.navigateTo("/post?id=$id") },
+        onRetry = viewModel::retry,
+        onLoadMore = viewModel::loadMore,
+        onDismissMessage = viewModel::dismissMessage,
+    )
 }

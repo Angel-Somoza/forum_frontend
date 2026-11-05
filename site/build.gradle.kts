@@ -18,7 +18,7 @@ kobweb {
             head.add {
                 link(rel = "preconnect", href = "https://fonts.googleapis.com")
                 link(rel = "stylesheet", href = "https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap")
-                link(rel = "stylesheet", href = "https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded")
+                link(rel = "stylesheet", href = "https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0")
                 link(rel = "stylesheet", href = "/styles.css")
             }
         }
