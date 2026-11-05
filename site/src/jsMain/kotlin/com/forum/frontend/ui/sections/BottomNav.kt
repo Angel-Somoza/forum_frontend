@@ -17,7 +17,7 @@ fun BottomNav(
 ) {
     Nav({ classes("bottom-nav") }) {
         NavButton("/", "home", "Inicio", currentPath, 0, onNavigate)
-        NavButton("/badges", "workspace_premium", "Insignias", currentPath, 0, onNavigate)
+        NavButton("/search", "search", "Buscar", currentPath, 0, onNavigate)
         Button({
             classes("nav-create")
             title("Nueva publicación")

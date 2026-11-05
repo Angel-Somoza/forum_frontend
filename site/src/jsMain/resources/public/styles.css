@@ -180,3 +180,19 @@ button { cursor: pointer; }
 .comment-input::placeholder { color: rgba(168, 151, 154, 0.7); }
 .send-button { width: 44px; height: 44px; flex-shrink: 0; border-radius: 50%; border: none; background: var(--gold); color: #1d1011; display: inline-flex; align-items: center; justify-content: center; }
 .send-button:disabled { opacity: 0.4; cursor: default; }
+.search-bar { display: flex; align-items: center; gap: 10px; padding: 0 16px; border-radius: 999px; background: var(--surface); border: 1px solid var(--border); }
+.search-bar:focus-within { border-color: rgba(242, 184, 75, 0.6); background: var(--surface-strong); }
+.search-bar > .material-symbols-rounded { color: var(--muted); }
+.search-input { flex: 1; min-width: 0; padding: 14px 0; border: none; outline: none; background: transparent; font-size: 15px; }
+.search-input::placeholder { color: rgba(168, 151, 154, 0.7); }
+.search-input::-webkit-search-cancel-button { display: none; }
+.result-post { cursor: pointer; transition: border-color 0.15s; }
+.result-post:hover { border-color: rgba(242, 184, 75, 0.35); }
+.result-meta { display: flex; align-items: center; gap: 6px; margin-top: 12px; color: var(--muted); font-size: 13px; }
+.result-meta .material-symbols-rounded { font-size: 17px; }
+.result-meta span + .material-symbols-rounded { margin-left: 10px; }
+.people-list { display: flex; flex-direction: column; padding: 8px; }
+.person-row { display: flex; align-items: center; gap: 12px; width: 100%; padding: 10px; border: none; border-radius: 16px; background: none; text-align: left; }
+.person-row:hover { background: var(--surface); }
+.person-text { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.person-row > .material-symbols-rounded { color: var(--muted); }
