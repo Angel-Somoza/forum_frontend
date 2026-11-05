@@ -1,5 +1,6 @@
 package com.forum.frontend.data.mapper
 
+import com.forum.frontend.core.toSafeUrl
 import com.forum.frontend.data.remote.dto.MeDto
 import com.forum.frontend.data.remote.dto.SpaceDto
 import com.forum.frontend.domain.model.CurrentUser
@@ -13,7 +14,7 @@ fun MeDto.toDomain(): CurrentUser = CurrentUser(
     carnet = carnet,
     firstName = firstName,
     lastName = lastName,
-    profilePictureUrl = profilePictureUrl?.takeIf { it.isNotBlank() },
+    profilePictureUrl = profilePictureUrl.toSafeUrl(),
     role = Role.fromApi(roleName),
     spaces = spaces.map { it.toDomain() },
 )

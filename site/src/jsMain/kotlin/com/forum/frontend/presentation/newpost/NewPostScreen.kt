@@ -26,7 +26,7 @@ fun NewPostScreen(
 
         if (state.spaces.isEmpty()) {
             P({ classes("muted") }) {
-                Text("Aún no tienes un espacio asignado. Pide a un Developer que te agregue a uno.")
+                Text("Todavía no estás en ningún espacio")
             }
             return@Div
         }
@@ -42,7 +42,7 @@ fun NewPostScreen(
 
         TextArea(value = state.content) {
             classes("composer-input")
-            placeholder("¿Qué quieres compartir? Usa #hashtags para destacar temas")
+            placeholder("¿Qué estás pensando?")
             attr("maxlength", NewPostUiState.MAX_LENGTH.toString())
             onInput { onContentChange(it.value) }
         }
@@ -53,7 +53,7 @@ fun NewPostScreen(
 
         Div({ classes("composer-footer") }) {
             Span({ classes(*cls("char-count", if (state.remaining < 200) "warn" else null)) }) {
-                Text(state.remaining.toString())
+                if (state.remaining < 200) Text(state.remaining.toString())
             }
             Div({ classes("composer-actions") }) {
                 Button({

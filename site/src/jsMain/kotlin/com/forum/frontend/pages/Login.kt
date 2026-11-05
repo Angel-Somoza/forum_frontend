@@ -19,7 +19,7 @@ fun LoginPage() {
     val state by viewModel.state.collectAsState()
 
     LaunchedEffect(Unit) {
-        document.title = "Iniciar sesión · Forum"
+        document.title = "Entrar · Forum"
     }
 
     LaunchedEffect(state.isLoggedIn) {
@@ -30,6 +30,7 @@ fun LoginPage() {
         state = state,
         onCarnetChange = viewModel::onCarnetChange,
         onPasswordChange = viewModel::onPasswordChange,
+        onTogglePassword = viewModel::togglePasswordVisibility,
         onLoginClick = viewModel::submit,
     )
 }

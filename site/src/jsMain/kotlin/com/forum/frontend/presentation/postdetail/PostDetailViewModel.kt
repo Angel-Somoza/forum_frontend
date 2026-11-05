@@ -1,5 +1,6 @@
 package com.forum.frontend.presentation.postdetail
 
+import com.forum.frontend.core.LoadingTracker
 import com.forum.frontend.core.resultOf
 import com.forum.frontend.domain.error.toUserMessage
 import com.forum.frontend.domain.model.Comment
@@ -22,6 +23,7 @@ class PostDetailViewModel(
     private val postRepository: PostRepository,
     private val commentRepository: CommentRepository,
     authRepository: AuthRepository,
+    private val loading: LoadingTracker,
 ) : ViewModel() {
 
     private val currentUser = authRepository.currentUser.value
@@ -144,7 +146,7 @@ class PostDetailViewModel(
     fun deletePost() {
         val post = _state.value.post ?: return
         scope.launch {
-            resultOf { postRepository.deletePost(post.id) }
+            resultOf { loading.blocking("Eliminando") { postRepository.deletePost(post.id) } }
                 .onSuccess { _state.update { it.copy(isDeleted = true) } }
                 .onFailure { error -> _state.update { it.copy(message = error.toUserMessage()) } }
         }

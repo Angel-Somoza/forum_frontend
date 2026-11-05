@@ -39,7 +39,7 @@ fun SearchScreen(
         Input(InputType.Search) {
             id("search-input")
             classes("search-input")
-            placeholder("Buscar personas o publicaciones")
+            placeholder("Buscar")
             attr("autocomplete", "off")
             value(state.query)
             onInput { onQueryChange(it.value) }
@@ -60,18 +60,10 @@ fun SearchScreen(
     )
 
     when {
-        state.isQueryTooShort -> EmptyCard(
-            icon = "search",
-            title = "Busca en el foro",
-            message = "Escribe al menos 2 letras para buscar personas o publicaciones",
-        )
+        state.isQueryTooShort -> EmptyCard(icon = "search", title = "Personas o publicaciones")
         state.isLoading -> LoadingCard()
         state.error != null -> ErrorCard(state.error, onRetry)
-        state.isEmptyResult -> EmptyCard(
-            icon = "search_off",
-            title = "Sin resultados",
-            message = "No encontramos nada para \"${state.query.trim()}\"",
-        )
+        state.isEmptyResult -> EmptyCard(icon = "search_off", title = "Sin resultados")
         state.tab == SearchTab.POSTS -> state.posts.forEach { post ->
             key(post.id) { PostResult(post, onOpen = { onPostOpen(post.id) }) }
         }
@@ -87,7 +79,7 @@ fun SearchScreen(
             classes("load-more")
             if (state.isLoadingMore) disabled()
             onClick { onLoadMore() }
-        }) { Text(if (state.isLoadingMore) "Cargando..." else "Cargar más") }
+        }) { Text(if (state.isLoadingMore) "Cargando..." else "Ver más") }
     }
 }
 

@@ -34,7 +34,7 @@ fun PostPage() {
     }
 
     if (postId == null) {
-        EmptyCard("link_off", "Publicación no encontrada", "El enlace no es válido")
+        EmptyCard("link_off", "No encontramos esta publicación")
         return
     }
 

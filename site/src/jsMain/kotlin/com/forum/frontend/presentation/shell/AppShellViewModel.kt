@@ -1,5 +1,6 @@
 package com.forum.frontend.presentation.shell
 
+import com.forum.frontend.core.LoadingTracker
 import com.forum.frontend.core.resultOf
 import com.forum.frontend.domain.model.CurrentUser
 import com.forum.frontend.domain.repository.AuthRepository
@@ -11,6 +12,7 @@ import kotlinx.coroutines.launch
 class AppShellViewModel(
     private val authRepository: AuthRepository,
     private val notificationRepository: NotificationRepository,
+    private val loading: LoadingTracker,
 ) : ViewModel() {
 
     val currentUser: StateFlow<CurrentUser?> = authRepository.currentUser
@@ -24,7 +26,7 @@ class AppShellViewModel(
 
     fun logout() {
         scope.launch {
-            resultOf { authRepository.logout() }
+            resultOf { loading.blocking("Cerrando sesión") { authRepository.logout() } }
         }
     }
 }

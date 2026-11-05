@@ -1,5 +1,6 @@
 package com.forum.frontend.data.remote
 
+import com.forum.frontend.core.LoadingTracker
 import com.forum.frontend.core.resultOf
 import com.forum.frontend.data.remote.dto.ErrorResponseDto
 import com.forum.frontend.data.session.SessionStore
@@ -25,6 +26,7 @@ import kotlin.coroutines.cancellation.CancellationException
 class ApiClient(
     private val baseUrl: String,
     private val session: SessionStore,
+    private val loading: LoadingTracker,
 ) {
     private val http = HttpClient(Js) {
         expectSuccess = false
@@ -58,7 +60,7 @@ class ApiClient(
         method: HttpMethod,
         path: String,
         configure: HttpRequestBuilder.() -> Unit,
-    ): HttpResponse {
+    ): HttpResponse = loading.request {
         val response = try {
             http.request(baseUrl + path) {
                 this.method = method
@@ -71,7 +73,7 @@ class ApiClient(
             throw AppError.Network()
         }
         if (!response.status.isSuccess()) throw toAppError(response)
-        return response
+        response
     }
 
     private suspend fun toAppError(response: HttpResponse): AppError {

@@ -7,9 +7,9 @@ import com.forum.frontend.ui.components.EmptyCard
 import com.forum.frontend.ui.components.ErrorCard
 import com.forum.frontend.ui.components.LoadingCard
 import com.forum.frontend.ui.components.PostCard
+import com.forum.frontend.ui.components.Toast
 import org.jetbrains.compose.web.attributes.disabled
 import org.jetbrains.compose.web.dom.Button
-import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.H2
 import org.jetbrains.compose.web.dom.Text
 
@@ -31,16 +31,12 @@ fun FeedScreen(
         )
     }
 
-    H2({ classes("section-title") }) { Text("Publicaciones recientes") }
+    H2({ classes("section-title") }) { Text("Lo último") }
 
     when {
         state.isLoading -> LoadingCard()
         state.error != null -> ErrorCard(state.error, onRetry)
-        state.isEmpty -> EmptyCard(
-            icon = "dynamic_feed",
-            title = "Aún no hay publicaciones",
-            message = "Sé el primero en compartir algo con el botón +",
-        )
+        state.isEmpty -> EmptyCard(icon = "dynamic_feed", title = "Nada por aquí todavía")
         else -> {
             state.posts.forEach { post ->
                 key(post.id) {
@@ -57,16 +53,11 @@ fun FeedScreen(
                     if (state.isLoadingMore) disabled()
                     onClick { onLoadMore() }
                 }) {
-                    Text(if (state.isLoadingMore) "Cargando..." else "Cargar más")
+                    Text(if (state.isLoadingMore) "Cargando..." else "Ver más")
                 }
             }
         }
     }
 
-    state.message?.let { message ->
-        Div({
-            classes("toast")
-            onClick { onDismissMessage() }
-        }) { Text(message) }
-    }
+    state.message?.let { Toast(it, onDismissMessage) }
 }

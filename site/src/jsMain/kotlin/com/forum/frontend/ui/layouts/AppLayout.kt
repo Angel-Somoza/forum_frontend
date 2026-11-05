@@ -6,6 +6,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import com.forum.frontend.presentation.core.rememberViewModel
 import com.forum.frontend.presentation.shell.AppShellViewModel
+import com.forum.frontend.ui.components.ScreenLoader
 import com.forum.frontend.ui.sections.AppHeader
 import com.forum.frontend.ui.sections.BottomNav
 import com.varabyte.kobweb.core.layout.Layout
@@ -31,7 +32,7 @@ fun AppLayout(content: @Composable () -> Unit) {
     }
 
     val currentUser = user ?: run {
-        Div({ classes("screen-loading") }) { Div({ classes("spinner") }) }
+        ScreenLoader()
         return
     }
 

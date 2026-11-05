@@ -1,5 +1,6 @@
 package com.forum.frontend.presentation.newpost
 
+import com.forum.frontend.core.LoadingTracker
 import com.forum.frontend.core.resultOf
 import com.forum.frontend.domain.error.toUserMessage
 import com.forum.frontend.domain.repository.AuthRepository
@@ -14,6 +15,7 @@ import kotlinx.coroutines.launch
 class NewPostViewModel(
     private val postRepository: PostRepository,
     authRepository: AuthRepository,
+    private val loading: LoadingTracker,
 ) : ViewModel() {
 
     private val spaces = authRepository.currentUser.value?.spaces.orEmpty()
@@ -37,7 +39,7 @@ class NewPostViewModel(
         if (!current.canSubmit) return
         _state.update { it.copy(isSubmitting = true, error = null) }
         scope.launch {
-            resultOf { postRepository.createPost(spaceId, current.content.trim()) }
+            resultOf { loading.blocking("Publicando") { postRepository.createPost(spaceId, current.content.trim()) } }
                 .onSuccess { _state.update { it.copy(isSubmitting = false, isPublished = true) } }
                 .onFailure { error -> _state.update { it.copy(isSubmitting = false, error = error.toUserMessage()) } }
         }

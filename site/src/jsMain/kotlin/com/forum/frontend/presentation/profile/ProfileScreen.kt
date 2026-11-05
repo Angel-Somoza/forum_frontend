@@ -12,6 +12,7 @@ import com.forum.frontend.ui.components.EmptyCard
 import com.forum.frontend.ui.components.ErrorCard
 import com.forum.frontend.ui.components.Icon
 import com.forum.frontend.ui.components.LoadingCard
+import com.forum.frontend.ui.components.Toast
 import com.forum.frontend.ui.format.compactCount
 import com.forum.frontend.ui.format.formatDate
 import org.jetbrains.compose.web.attributes.disabled
@@ -52,12 +53,7 @@ fun ProfileScreen(
         }
     }
 
-    state.message?.let { message ->
-        Div({
-            classes("toast")
-            onClick { onDismissMessage() }
-        }) { Text(message) }
-    }
+    state.message?.let { Toast(it, onDismissMessage) }
 }
 
 @Composable
@@ -102,11 +98,7 @@ private fun Stat(value: String, label: String) {
 @Composable
 private fun PostsTab(state: ProfileUiState, onPostOpen: (Int) -> Unit, onLoadMore: () -> Unit) {
     if (state.posts.isEmpty()) {
-        EmptyCard(
-            icon = "grid_view",
-            title = "Sin publicaciones",
-            message = if (state.isOwnProfile) "Usa el botón + para compartir tu primera publicación" else "Esta persona aún no ha publicado",
-        )
+        EmptyCard(icon = "grid_view", title = "Sin publicaciones")
         return
     }
     Div({ classes("post-grid") }) {
@@ -119,7 +111,7 @@ private fun PostsTab(state: ProfileUiState, onPostOpen: (Int) -> Unit, onLoadMor
             classes("load-more")
             if (state.isLoadingMore) disabled()
             onClick { onLoadMore() }
-        }) { Text(if (state.isLoadingMore) "Cargando..." else "Cargar más") }
+        }) { Text(if (state.isLoadingMore) "Cargando..." else "Ver más") }
     }
 }
 
@@ -149,11 +141,7 @@ private fun PostTile(post: Post, onOpen: () -> Unit) {
 @Composable
 private fun BadgesTab(state: ProfileUiState) {
     if (state.badges.isEmpty()) {
-        EmptyCard(
-            icon = "workspace_premium",
-            title = "Sin insignias todavía",
-            message = "Las insignias se obtienen al cumplir logros dentro del foro",
-        )
+        EmptyCard(icon = "workspace_premium", title = "Sin insignias todavía")
         return
     }
     Div({ classes("card", "badge-list") }) {
@@ -164,7 +152,7 @@ private fun BadgesTab(state: ProfileUiState) {
                     Div({ classes("person-text") }) {
                         Span({ classes("author-name") }) { Text(badge.name) }
                         badge.description?.let { Span({ classes("author-meta") }) { Text(it) } }
-                        badge.earnedAt?.let { Span({ classes("author-meta") }) { Text("Obtenida el ${formatDate(it)}") } }
+                        badge.earnedAt?.let { Span({ classes("author-meta") }) { Text(formatDate(it)) } }
                     }
                 }
             }

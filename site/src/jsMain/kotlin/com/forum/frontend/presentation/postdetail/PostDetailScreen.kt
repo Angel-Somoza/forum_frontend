@@ -9,6 +9,7 @@ import com.forum.frontend.ui.components.ErrorCard
 import com.forum.frontend.ui.components.Icon
 import com.forum.frontend.ui.components.LoadingCard
 import com.forum.frontend.ui.components.PostCard
+import com.forum.frontend.ui.components.Toast
 import com.forum.frontend.ui.components.PostText
 import com.forum.frontend.ui.components.cls
 import com.forum.frontend.ui.format.compactCount
@@ -63,10 +64,10 @@ fun PostDetailScreen(
                 expanded = true,
                 onDeleteClick = if (state.canDelete(post.author.id)) onDeletePostClick else null,
             )
-            H2({ classes("section-title") }) { Text("Comentarios (${post.commentCount})") }
+            H2({ classes("section-title") }) { Text("Comentarios · ${post.commentCount}") }
             Div({ classes("card", "comments-card") }) {
                 if (state.thread.isEmpty()) {
-                    P({ classes("muted") }) { Text("Aún no hay comentarios. Sé el primero en opinar.") }
+                    P({ classes("muted") }) { Text("Sin comentarios todavía") }
                 }
                 state.thread.forEach { node ->
                     key(node.comment.id) {
@@ -78,12 +79,7 @@ fun PostDetailScreen(
         }
     }
 
-    state.message?.let { message ->
-        Div({
-            classes("toast")
-            onClick { onDismissMessage() }
-        }) { Text(message) }
-    }
+    state.message?.let { Toast(it, onDismissMessage) }
 }
 
 @Composable
@@ -153,7 +149,7 @@ private fun CommentComposer(
     }) {
         state.replyingTo?.let { target ->
             Div({ classes("replying-to") }) {
-                Span { Text("Respondiendo a ${target.author.fullName}") }
+                Span { Text("Para ${target.author.fullName}") }
                 Button({
                     classes("link-button")
                     type(ButtonType.Button)
@@ -165,7 +161,7 @@ private fun CommentComposer(
             Input(InputType.Text) {
                 id("comment-input")
                 classes("comment-input")
-                placeholder(if (state.replyingTo != null) "Escribe tu respuesta..." else "Escribe un comentario...")
+                placeholder(if (state.replyingTo != null) "Responder" else "Comentar")
                 attr("maxlength", PostDetailUiState.MAX_COMMENT_LENGTH.toString())
                 value(state.draft)
                 onInput { onDraftChange(it.value) }

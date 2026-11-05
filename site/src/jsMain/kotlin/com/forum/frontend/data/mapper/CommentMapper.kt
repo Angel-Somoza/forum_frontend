@@ -1,5 +1,6 @@
 package com.forum.frontend.data.mapper
 
+import com.forum.frontend.core.toSafeUrl
 import com.forum.frontend.data.remote.dto.CommentDto
 import com.forum.frontend.domain.model.Author
 import com.forum.frontend.domain.model.Comment
@@ -13,7 +14,7 @@ fun CommentDto.toDomain(): Comment = Comment(
         id = userId,
         firstName = authorFirstName,
         lastName = authorLastName,
-        pictureUrl = authorPictureUrl?.takeIf { it.isNotBlank() },
+        pictureUrl = authorPictureUrl.toSafeUrl(),
         role = Role.UNKNOWN,
     ),
     parentId = parentId,
