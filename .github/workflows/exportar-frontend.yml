@@ -1,0 +1,54 @@
+
+name: Exportar frontend
+
+on:
+  workflow_dispatch:
+
+jobs:
+  exportar:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    permissions:
+      contents: read
+
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Preparar Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Configurar navegador
+        run: echo "KOBWEB_EXPORT_BROWSER_PATH=$(command -v google-chrome)" >> "$GITHUB_ENV"
+
+      - name: Exportar sitio web
+        env:
+          KOBWEB_EXPORT_NUM_THREADS: '2'
+        run: |
+          chmod +x ./gradlew
+          ./gradlew :site:kobwebExport \
+            -PkobwebReuseServer=false \
+            -PkobwebEnv=DEV \
+            -PkobwebRunLayout=FULLSTACK \
+            -PkobwebBuildTarget=RELEASE \
+            -PkobwebExportLayout=STATIC \
+            --no-daemon --max-workers=2
+
+      - name: Verificar archivos
+        run: |
+          test -f site/.kobweb/site/index.html
+          du -sh site/.kobweb/site
+
+      - name: Generar ZIP descargable
+        uses: actions/upload-artifact@v4
+        with:
+          name: forum-frontend-estatico
+          path: site/.kobweb/site/
+          if-no-files-found: error
+          retention-days: 7
