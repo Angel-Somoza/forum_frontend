@@ -42,6 +42,7 @@ class ProfileViewModel(
     }
 
     private val currentUserId = authRepository.currentUser.value?.id
+    private val isStaff = authRepository.currentUser.value?.isStaff == true
 
     private val _state = MutableStateFlow(ProfileUiState())
     val state: StateFlow<ProfileUiState> = _state.asStateFlow()
@@ -132,6 +133,25 @@ class ProfileViewModel(
 
     private fun replacePost(post: Post) {
         _state.update { s -> s.copy(posts = s.posts.map { if (it.id == post.id) post else it }) }
+    }
+
+    fun canDelete(post: Post): Boolean = isStaff || post.author.id == currentUserId
+
+    fun deletePost(postId: Int) {
+        val current = _state.value.posts
+        val target = current.firstOrNull { it.id == postId } ?: return
+        if (!canDelete(target)) return
+        _state.update { s -> s.copy(posts = s.posts.filterNot { it.id == postId }) }
+        scope.launch {
+            resultOf { postRepository.deletePost(postId) }
+                .onSuccess { _state.update { it.copy(message = "Publicación eliminada") } }
+                .onFailure { error ->
+                    _state.update { s ->
+                        val index = current.indexOfFirst { it.id == postId }.coerceAtMost(s.posts.size)
+                        s.copy(posts = s.posts.toMutableList().apply { add(index, target) }, message = error.toUserMessage())
+                    }
+                }
+        }
     }
 
     fun dismissMessage() {

@@ -22,6 +22,8 @@ class FeedViewModel(
 ) : ViewModel() {
 
     private val spaces = authRepository.currentUser.value?.spaces.orEmpty()
+    private val currentUserId = authRepository.currentUser.value?.id
+    private val isStaff = authRepository.currentUser.value?.isStaff == true
 
     private val _state = MutableStateFlow(
         FeedUiState(spaces = spaces, showSpaceFilter = spaces.size > 1),
@@ -97,6 +99,25 @@ class FeedViewModel(
                 _state.update { it.copy(message = error.toUserMessage()) }
             }
             pendingLikes -= postId
+        }
+    }
+
+    fun canDelete(post: Post): Boolean = isStaff || post.author.id == currentUserId
+
+    fun deletePost(postId: Int) {
+        val current = _state.value.posts
+        val target = current.firstOrNull { it.id == postId } ?: return
+        if (!canDelete(target)) return
+        _state.update { s -> s.copy(posts = s.posts.filterNot { it.id == postId }) }
+        scope.launch {
+            resultOf { postRepository.deletePost(postId) }
+                .onSuccess { _state.update { it.copy(message = "Publicación eliminada") } }
+                .onFailure { error ->
+                    _state.update { s ->
+                        val index = current.indexOfFirst { it.id == postId }.coerceAtMost(s.posts.size)
+                        s.copy(posts = s.posts.toMutableList().apply { add(index, target) }, message = error.toUserMessage())
+                    }
+                }
         }
     }
 

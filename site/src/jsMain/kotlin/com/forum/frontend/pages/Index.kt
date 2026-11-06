@@ -12,6 +12,7 @@ import com.varabyte.kobweb.core.Page
 import com.varabyte.kobweb.core.layout.Layout
 import com.varabyte.kobweb.core.rememberPageContext
 import kotlinx.browser.document
+import kotlinx.browser.window
 
 @Page
 @Layout(".ui.layouts.AppLayout")
@@ -35,5 +36,9 @@ fun HomePage() {
         onComposeClick = { ctx.router.navigateTo("/new") },
         onShareClick = shareController::open,
         onOpenPost = { id -> ctx.router.navigateTo("/post?id=$id") },
+        canDelete = viewModel::canDelete,
+        onDeleteClick = { post ->
+            if (window.confirm("¿Eliminar esta publicación?")) viewModel.deletePost(post.id)
+        },
     )
 }

@@ -29,6 +29,8 @@ fun FeedScreen(
     onComposeClick: () -> Unit = {},
     onShareClick: (Post) -> Unit = {},
     onOpenPost: (Int) -> Unit = {},
+    canDelete: (Post) -> Boolean = { false },
+    onDeleteClick: (Post) -> Unit = {},
 ) {
     Div({ classes("card", "feed-composer") }) {
         Button({
@@ -76,6 +78,7 @@ fun FeedScreen(
                         onCommentsClick = { onCommentsClick(post.id) },
                         onShareClick = { onShareClick(post) },
                         onOpenPost = onOpenPost,
+                        onDeleteClick = if (canDelete(post)) ({ onDeleteClick(post) }) else null,
                     )
                 }
             }
