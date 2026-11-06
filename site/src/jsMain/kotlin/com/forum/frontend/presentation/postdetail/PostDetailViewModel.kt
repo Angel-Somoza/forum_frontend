@@ -29,7 +29,7 @@ class PostDetailViewModel(
     private val currentUser = authRepository.currentUser.value
 
     private val _state = MutableStateFlow(
-        PostDetailUiState(currentUserId = currentUser?.id, isModerator = currentUser?.isDeveloper == true),
+        PostDetailUiState(currentUserId = currentUser?.id, isModerator = currentUser?.isStaff == true),
     )
     val state: StateFlow<PostDetailUiState> = _state.asStateFlow()
 
