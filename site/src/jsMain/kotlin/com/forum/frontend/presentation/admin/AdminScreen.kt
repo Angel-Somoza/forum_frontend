@@ -229,7 +229,7 @@ private fun AccountFormCard(
 
         Div({ classes("admin-hint") }) {
             Icon("lock")
-            Span { Text("La contraseña se genera sola: 8 dígitos al azar.") }
+            Span { Text("La contraseña se genera sola: 8 caracteres al azar con mayúsculas, minúsculas y números.") }
         }
         state.formError?.let { P({ classes("form-error") }) { Text(it) } }
         Div({ classes("composer-actions", "end") }) {
