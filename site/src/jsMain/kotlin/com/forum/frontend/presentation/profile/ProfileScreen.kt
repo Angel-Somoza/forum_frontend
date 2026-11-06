@@ -35,6 +35,8 @@ fun ProfileScreen(
     onLikeClick: (Int) -> Unit,
     onComposeClick: () -> Unit,
     onShareClick: (Post) -> Unit,
+    canDelete: (Post) -> Boolean,
+    onDeleteClick: (Post) -> Unit,
     onRetry: () -> Unit,
     onLoadMore: () -> Unit,
     onDismissMessage: () -> Unit,
@@ -45,7 +47,7 @@ fun ProfileScreen(
         state.profile != null -> {
             ProfileHero(state.profile, state.badges, state.tab, state.isOwnProfile, onTabSelect, onComposeClick)
             when (state.tab) {
-                ProfileTab.POSTS -> PostsTab(state, onPostOpen, onLikeClick, onComposeClick, onShareClick, onLoadMore)
+                ProfileTab.POSTS -> PostsTab(state, onPostOpen, onLikeClick, onComposeClick, onShareClick, canDelete, onDeleteClick, onLoadMore)
                 ProfileTab.BADGES -> BadgesTab(state)
             }
         }
@@ -140,6 +142,8 @@ private fun PostsTab(
     onLikeClick: (Int) -> Unit,
     onComposeClick: () -> Unit,
     onShareClick: (Post) -> Unit,
+    canDelete: (Post) -> Boolean,
+    onDeleteClick: (Post) -> Unit,
     onLoadMore: () -> Unit,
 ) {
     if (state.posts.isEmpty()) {
@@ -163,6 +167,7 @@ private fun PostsTab(
                 onCommentsClick = { onPostOpen(post.id) },
                 onShareClick = { onShareClick(post) },
                 onOpenPost = onPostOpen,
+                onDeleteClick = if (canDelete(post)) ({ onDeleteClick(post) }) else null,
             )
         }
     }

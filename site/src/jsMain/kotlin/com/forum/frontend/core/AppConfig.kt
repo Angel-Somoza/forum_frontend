@@ -5,7 +5,7 @@ import kotlinx.browser.window
 
 enum class Environment(val apiOrigin: String) {
     DEV("http://localhost:3000"),
-    PROD("https://api.forum.example.com"),
+    PROD("https://api.foroudeo.tech"),
 }
 
 object AppConfig {

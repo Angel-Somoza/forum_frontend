@@ -1,6 +1,7 @@
 package com.forum.frontend.presentation.admin
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.key
 import com.forum.frontend.domain.model.IssuedCredential
 import com.forum.frontend.domain.model.ManagedUser
@@ -10,6 +11,7 @@ import com.forum.frontend.ui.components.ErrorCard
 import com.forum.frontend.ui.components.Icon
 import com.forum.frontend.ui.components.Toast
 import com.forum.frontend.ui.components.cls
+import kotlinx.browser.document
 import org.jetbrains.compose.web.attributes.InputType
 import org.jetbrains.compose.web.attributes.disabled
 import org.jetbrains.compose.web.attributes.placeholder
@@ -22,6 +24,7 @@ import org.jetbrains.compose.web.dom.Label
 import org.jetbrains.compose.web.dom.P
 import org.jetbrains.compose.web.dom.Span
 import org.jetbrains.compose.web.dom.Text
+import org.w3c.dom.HTMLElement
 
 @Composable
 fun AdminScreen(
@@ -54,13 +57,17 @@ fun AdminScreen(
         }
     }
 
-    state.credential?.let { CredentialCard(it, state.copied, onCopyPassword, onDismissCredential) }
-
     AccountFormCard(state, onToggleForm, onFormChange, onRoleSelect, onSpaceToggle, onSubmit)
 
     UsersCard(state, canManage, onQueryChange, onResetPassword, onToggleActive, onRetryUsers, onLoadMore)
 
     state.message?.let { Toast(it, onDismissMessage) }
+
+    state.credential?.let { credential ->
+        Div({ classes("modal-backdrop") }) {
+            CredentialCard(credential, state.copied, onCopyPassword, onDismissCredential)
+        }
+    }
 }
 
 @Composable
@@ -70,9 +77,14 @@ private fun CredentialCard(
     onCopy: () -> Unit,
     onDismiss: () -> Unit,
 ) {
+    LaunchedEffect(credential.userId, credential.password) {
+        (document.getElementById("credential-done") as? HTMLElement)?.focus()
+    }
     Div({
-        classes("card", "credential-card")
-        attr("role", "alert")
+        classes("card", "modal", "credential-card")
+        attr("role", "alertdialog")
+        attr("aria-modal", "true")
+        attr("aria-label", if (credential.isReset) "Nueva contraseña generada" else "Cuenta creada")
     }) {
         Div({ classes("credential-head") }) {
             Span({ classes("credential-icon") }) { Icon(if (credential.isReset) "key" else "how_to_reg") }
@@ -103,6 +115,7 @@ private fun CredentialCard(
             Span { Text("Solo se muestra esta vez. Entrégala en persona; la persona puede cambiarla después.") }
         }
         Button({
+            id("credential-done")
             classes("btn-gold")
             onClick { onDismiss() }
         }) { Text("Listo, ya la entregué") }
@@ -216,7 +229,7 @@ private fun AccountFormCard(
 
         Div({ classes("admin-hint") }) {
             Icon("lock")
-            Span { Text("La contraseña se genera sola: 8 dígitos al azar.") }
+            Span { Text("La contraseña se genera sola: 8 caracteres al azar con mayúsculas, minúsculas y números.") }
         }
         state.formError?.let { P({ classes("form-error") }) { Text(it) } }
         Div({ classes("composer-actions", "end") }) {

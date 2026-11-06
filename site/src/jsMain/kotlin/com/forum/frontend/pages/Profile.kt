@@ -12,6 +12,7 @@ import com.varabyte.kobweb.core.Page
 import com.varabyte.kobweb.core.layout.Layout
 import com.varabyte.kobweb.core.rememberPageContext
 import kotlinx.browser.document
+import kotlinx.browser.window
 
 @Page
 @Layout(".ui.layouts.AppLayout")
@@ -38,6 +39,10 @@ fun ProfilePage() {
         onLikeClick = viewModel::toggleLike,
         onComposeClick = { ctx.router.navigateTo("/new") },
         onShareClick = shareController::open,
+        canDelete = viewModel::canDelete,
+        onDeleteClick = { post ->
+            if (window.confirm("¿Eliminar esta publicación?")) viewModel.deletePost(post.id)
+        },
         onRetry = viewModel::retry,
         onLoadMore = viewModel::loadMore,
         onDismissMessage = viewModel::dismissMessage,

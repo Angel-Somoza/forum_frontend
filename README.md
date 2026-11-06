@@ -7,7 +7,7 @@ El frontend elige solo la URL del backend según dónde se abre:
 | Entorno | Cuándo | API |
 | ------- | ------ | --- |
 | `DEV`   | `localhost` / `127.0.0.1` | `http://localhost:3000/api/v1` |
-| `PROD`  | cualquier otro dominio | `Environment.PROD` en `core/AppConfig.kt` |
+| `PROD`  | cualquier otro dominio | `https://api.foroudeo.tech/api/v1` (`Environment.PROD` en `core/AppConfig.kt`) |
 
 Cuando el backend esté en la nube, cambia una sola línea (`PROD("https://...")`) en `site/src/jsMain/kotlin/com/forum/frontend/core/AppConfig.kt`, o sin recompilar agrega en el HTML publicado:
 
